@@ -1,0 +1,809 @@
+"""
+Open-Source Anticipated Response Inhibition (OSARI)
+Created in PsychoPy v3.1.2
+Authors: Rebecca J Hirst [1] Rohan Puri [2] Jason L He [3]
+[1] Trinity College Institute of Neuroscience, Trinity College Dublin
+[2] University of Tasmania
+[3] King's College London
+Mail to Authors:  opensourceTAP@gmail.com
+
+Input:
+    4 csv files:
+        practiceGoTrials.csv
+        testGoBlocks.csv
+        practiceMixedTrials.csv
+        testBlocks.csv
+
+    In all csv files each row corresponds to a trial, so the number of rows will correspond to the number
+    of trials in a block. Note, that the order of trial presentation will be random unless the user specifies otherwise.
+    0 = Go 1 = Stop
+
+Output:
+
+    4 output files in format:
+        data/s_ID_OSARI_yyyy_mo_d_hhmm.log
+        data/s_ID_OSARI_yyyy_mo_d_hhmm.csv
+        data/s_ID_OSARI_yyyy_mo_d_hhmm.psydat
+        data_txt/s_ID_OSARI_yyyy_mo_d_hhmm.txt
+
+    ID = Participant ID ; yyyy = Year; mo = month
+    d = day; h = hour; m = minute
+    Data stored in "data_txt" is compatible with BASTD analysis script (https://github.com/HeJasonL/BASTD)
+    Block: block number
+    blockRep: current repetition of this block type
+    TrialType: block label (practice/real all go/mixed)
+    Trial: trial number
+    Signal: 0 = Go
+            1 = Stop
+    Response: 0 = no lift, 1 = lift
+    SSD: Stop Signal Distance (relative to start time) if the trial was a stop trial.
+    RT: key lift time of participants relative to start time
+
+    Note:
+        Make sure the resolution of "testMonitor" in monitor centre matches actual screen resolution
+        Please limit the number of background programmes running
+        We recommend running the demo view>input>timeByFrames.py to assess reliability of frame duration
+"""
+
+
+#======================================
+# Import Modules and set defaults
+#======================================
+from __future__ import absolute_import, division
+import os
+from os import path
+import numpy as np
+from psychopy import gui, visual, core, data, event, logging
+from psychopy.hardware import keyboard
+from psychopy.tools.filetools import fromFile, toFile
+import pickle
+from OSARI_functions import *
+
+# fetch keyboard using Keyboard class (better timing)
+kb = keyboard.Keyboard(bufferSize=10, waitForStart=True)
+
+# set the directory to be the current directory to save files
+_thisDir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(_thisDir)
+
+# Set the experiment name (expName)
+expName = 'OSARI'
+
+#======================================
+# Setup the Graphic User Interfaces (GUIs)
+#======================================
+    #OSARI presents users with three GUIs:
+        # 1. The Participant Information GUI
+        # 2. The Trial Structure GUI
+        # 3. The Additional Parameters GUI
+
+#---------------------------------------------------
+# The participant information GUI (expInfo)
+#---------------------------------------------------
+expInfo = {
+            'Participant ID': '0000',
+           'Age (Years)': '00',
+           'Gender': ['Female', 'Male', 'Transgender', 'Non-binary', 'Other', 'Prefer not to say'],
+           'Gender (other)': 'please state if other selected',
+           'Default parameters?': True
+           }
+
+# Dictionary for the participant information GUI (expInfo)
+dlg = gui.DlgFromDict(dictionary=expInfo, title='Participant Information',
+                      tip={
+                            'Participant ID': 'Participant identifier',
+                            'Age (Years)': 'Your age in years',
+                            'Gender': 'The gender you identify as',
+                            'Gender (other)': 'The gender you identify as if none of the dropdown options above are applicable',
+                            'Default parameters?': 'This will run the task with no additional options'
+                            })
+
+if not dlg.OK: core.quit()
+expInfo['date'] = data.getDateStr()
+
+#---------------------------------------------------
+# The Trial Structure GUI (more_task_info[0])
+#---------------------------------------------------
+try:  # try to find pickle files if they exist
+    more_task_info1 = open("more_task_info1.pickle", "rb")
+    more_task_info1 = pickle.load(more_task_info1)
+    more_task_info2 = open("more_task_info2.pickle", "rb")
+    more_task_info2 = pickle.load(more_task_info2)
+    more_task_info = [more_task_info1, more_task_info2]
+except:
+    more_task_info = [{'Practice trials': True,
+                        'All Go block': True,
+                        'Method': ['staircase', 'fixed'],
+                        'Trial order': ['random', 'sequential']},
+                      {'Count down': False,
+                        'Trial by trial feedback': True,
+                        'Step size (s)': 0.025,     
+                        'Lowest SSD (s)': 0.05,
+                        'Highest SSD (s)': 0.775,
+                        'Total bar height (in cm)': 15,
+                        'Number of Test Blocks': 3,
+                        'Full Screen': True,
+                        'color blind palette?': False,
+                        'Response key': ['space', 'left', 'right', 'up', 'down'],
+                       'Remember params': False
+                       }]
+
+# If no to default params, present further task params options.
+if not expInfo['Default parameters?']:
+    dlg = gui.DlgFromDict(dictionary=more_task_info[0], title='Trial Structure',
+                          tip={
+                              'All Go block': 'Do you want to present a full block of go trials in advance of the '
+                                              'mixed go/stop blocks?',
+                              'Method': 'What SSD method do you want?',
+                              'Trial order': 'Do you want trials to be in a random order or in the order you have set '
+                                             'in the conditions .csv file [sequential]'
+                                             })
+    if not dlg.OK: core.quit()
+else:
+    # parameters with multiple options need their default selecting
+    more_task_info[0]['Trial order'] = 'random'
+    more_task_info[0]['Method'] = 'staircase'
+
+#---------------------------------------------------
+# The Additional Parameters GUI (more_task_info[1])
+#---------------------------------------------------
+if not expInfo['Default parameters?']:
+    dlg = gui.DlgFromDict(dictionary=more_task_info[1], title='Additional parameters',
+                          tip={
+                              'Count down': 'Do you want a countdown before the bar starts filling?',    
+                              'Trial by trial feedback': 'Do you want participants to receive trial to trial feedback',
+                              'Step size (s)': 'What do you want the step size to be in ms - e.g., 0.025 is 25ms',
+                              'Lowest SSD (s)': 'The lowest the SSD can go in ms - e.g., 0.05 is 50ms',
+                              'Highest SSD (s)': 'The highest the SSD can go in ms - e.g., 0.775 is 775ms',
+                              'Total bar height (in cm)': 'The total height of the bar',
+                              'Number of Test Blocks': 'Number of test blocks [i.e. number of times trials in .csv '
+                                                       'file will be repeated. To set trial number and proportion of '
+                                                       'stop vs. go edit the .csv file]',
+                              'Full Screen': 'Do you want to run the task with Full Screen - recommended'
+                              })
+    if not dlg.OK: core.quit()
+else:
+    # params with multiple options need their default selecting
+    more_task_info[1]['Response key'] = 'space'
+
+if more_task_info[1]['Remember params']: #if participant selects 'remember parameters'
+    # print and save that information into the working directory
+    print('storing parameters for later')
+    toFile("more_task_info1.pickle", more_task_info[0])
+    toFile("more_task_info2.pickle", more_task_info[1])
+
+#---------------------------------------------------
+# Further Additional Parameters Outside of the GUIs
+#---------------------------------------------------
+# This section is to adjust parameters that are not available in the GUIs
+# These parameters are more technical and affect the task quite dramatically
+# Do not change these parameters without fully considering their implications
+
+# Bar_top: how many cm above the centre of the screen (x = 0 y = 0) the top of the bar will be drawn.
+Bar_top = more_task_info[1]['Total bar height (in cm)'] / 2
+
+# Target_pos: position of target line relative to total bar height (default is 80% of bar height)
+Target_pos = (.8 * more_task_info[1]['Total bar height (in cm)']) - Bar_top
+
+taskInfo = {
+            'Bar base below fixation (cm)': Bar_top,
+            'Bar width (cm)': 3,
+            'Bar top above fixation (cm)': Bar_top,
+            'Target line width (cm)': 5,
+            'Target line above fixation (cm)': Target_pos,
+            'rise velocity (cm/sec)': 15, # RP - Equal this to bar height?
+            'trial length (max trial duration in seconds)': 1,
+            'StopS start pos. (seconds)': .5
+            }
+
+# trial_length: max duration of a trial in seconds (time for bar to fill completely)
+trial_length = taskInfo['trial length (max trial duration in seconds)']
+bar_height = more_task_info[1]['Total bar height (in cm)']
+
+# Target_time: time taken to reach target line (default: 80% of the total trial time)
+Target_time = (.8 * taskInfo['trial length (max trial duration in seconds)'])
+
+# Initial stop signal position
+stoptime = taskInfo['StopS start pos. (seconds)']
+
+#======================================
+# Hardware parameters
+#======================================
+# Presents users with options for hardware parameters
+
+# Set up the window in which we will present stimuli
+win = visual.Window(
+                fullscr=more_task_info[1]['Full Screen'],
+                winType='pyglet',
+                monitor='testMonitor',
+                color=[-1, -1, -1],
+                colorSpace='rgb',
+                blendMode='avg',
+                allowGUI=False,
+                size=(1440, 900)
+                )
+mouse = event.Mouse(visible=False, newPos=None, win=win)
+#======================================
+# Data output
+#======================================
+# Create output directories if they do not already exist
+outDirs = ['data_txt', 'data']
+outFiles = []
+for outDir in outDirs:
+    if not os.path.exists(_thisDir + os.sep + outDir + os.sep):
+        print(f'{outDir}folder did not exist, making one in current directory')
+        os.makedirs(f'{_thisDir}{os.sep}{outDir}{os.sep}')
+    outFiles.append(f'{_thisDir}{os.sep}{outDir}{os.sep}s_{expInfo["Participant ID"]}_{expName}_{expInfo["date"]}')
+
+# Write header for txt file (i.e., column names)
+Output = outFiles[0]
+with open(Output + '.txt', 'a') as b:
+    b.write('block	trialType	trial	signal	response	ssd	rt\n')
+
+#======================================
+# Experiment Handler
+#======================================
+# Merge all info dictionaries so that we can save all the information to our output files
+allInfo = {**expInfo, **more_task_info[0], **more_task_info[1]}
+
+# Create experiment handler
+thisExp = data.ExperimentHandler(
+                name=expName, version='beta',
+                extraInfo=allInfo,
+                savePickle=True, saveWideText=True,
+                dataFileName=outFiles[1], autoLog=True
+                )
+thisExp.nextEntry()
+
+# save a log file for detailed verbose information
+logFile = logging.LogFile(outFiles[1] + '.log', level=logging.DEBUG)
+logging.console.setLevel(logging.WARNING)
+
+# Create a list of all the conditions the user selected for
+    # OSARI has two conditions:
+        # Go and Mixed
+            # Go conditions are just blocks with only go trials
+            # Mixed conditions are blocks with both go and stop trials
+
+    # The conditions are then further divided into those that are:
+            # Practice - block of 'practice' trials completed before the 'test' blocks
+            # Test - block of test trials that are used to assess participant performance
+
+# Note that the only compulsory blocks are the test mixed blocks (see below)
+
+condFileList = [] # Create a list to store the block conditions
+
+# The condition files are excel or .csv files that contain two columns and X number of rows
+    # with 'X' being the number of rows the user wants the participant's to complete
+    # The columns are 'Signal' and 'fixedStopTime'
+
+# Signal denotes the trial type, with 0's being a go trial and 1 being a stop trial
+# Fixed stop time is only relevant for stop trials and
+    # only if participants are NOT using staircased stop-signal delays (SSD)
+
+#---------------------------------------------------
+# Practice Go Block
+#---------------------------------------------------
+if more_task_info[0]['Practice trials']: # if practice was selected
+    condFileList.append(
+                    ['conditionFiles/practiceGoTrials.csv', 1]
+                    )
+
+#---------------------------------------------------
+# Test Go Block
+#---------------------------------------------------
+if more_task_info[0]['All Go block']: # if test go block was selected
+    condFileList.append(
+                    ['conditionFiles/testGoBlocks.csv', 1]
+                    )
+
+#---------------------------------------------------
+# Practice Mixed Block
+#---------------------------------------------------
+if more_task_info[0]['Practice trials']:  # if practice was selected
+    condFileList.append(
+                    ['conditionFiles/practiceMixedTrials.csv', 1]
+                    )
+
+#---------------------------------------------------
+# Test Mixed Block
+#---------------------------------------------------
+condFileList.append(
+                ['conditionFiles/testBlocks.csv',
+                more_task_info[1]['Number of Test Blocks']
+                ]
+                )
+
+#---------------------------------------------------
+# Create trial handler object based on selected blocks
+#---------------------------------------------------
+for cond in condFileList:
+    thisConditions = data.importConditions(cond[0])  # import the .csv file
+    thisfilename = path.split(cond[0])[1]
+    thisTrials = data.TrialHandler(
+                    trialList=thisConditions,
+                        nReps=cond[1],
+                    method=more_task_info[0]['Trial order'],
+                    name=path.splitext(thisfilename)[0],
+                        autoLog=True
+                    )  # name of loop is .csv filename
+    thisExp.addLoop(thisTrials)
+
+#======================================
+# Task instructions
+#======================================
+
+#---------------------------------------------------
+# String text feedback
+#---------------------------------------------------
+instructions = data.importConditions(
+                'conditionFiles/instructions.xlsx'
+                )# import the excel file
+
+instructionsText={}
+
+for thisInstruction in instructions:
+    if thisInstruction['respKey']:
+        thisTxt = thisInstruction['instruction'].format(
+                        variable = more_task_info[1]['Response key']
+                        )
+    else:
+        thisTxt = thisInstruction['instruction']
+    thisInst = visual.TextStim(
+                    win,
+                    pos=[thisInstruction['thisX'],
+                    thisInstruction['thisY']],
+                    height=1,
+                    wrapWidth = 30,
+                    color=[1, 1, 1],
+                    text=thisTxt,
+                    units='cm'
+                    )
+    instructionsText[f"{thisInstruction['label']}"] = thisInst
+
+#---------------------------------------------------
+# Visual image feedback
+#---------------------------------------------------
+go_instr_image = visual.ImageStim(
+                win, image='Stimuli' + os.sep + 'go_instr_image.jpeg',
+                units='norm',
+                size=(2, 2),
+                interpolate = True
+                )
+
+stop_instr_image = visual.ImageStim(
+                win, image='Stimuli' + os.sep + 'stop_instr_image.jpeg',
+                units='norm',
+                size=(2, 2),
+                interpolate = True
+                )
+
+#---------------------------------------------------
+# Numerical text feedback
+#---------------------------------------------------
+number_text = visual.TextStim(win,
+                pos=[0, Target_pos],
+                height=1,
+                color=[-1, -1, -1],
+                text="1",
+                units='cm'
+                )
+
+#======================================
+# Stimulus Parameters
+#======================================
+# OSARI presents participants with a (by default) white background bar
+# When participants depress the response key, the background bar appears to be filled from the bottom up
+# This is achieved by having a blue filling bar superimposed on the background bar
+
+#---------------------------------------------------
+# The Filling Bar (fillBar)
+#---------------------------------------------------
+bar_width_vert = [0 - (taskInfo['Bar width (cm)'] / 2), (taskInfo['Bar width (cm)'] / 2)]
+
+# "vert" = vertices (corners) of filling bar in x y coordinates ([0, 0] = center)
+vert = [(bar_width_vert[0], 0 - taskInfo['Bar base below fixation (cm)']),
+        (bar_width_vert[0], 0 - taskInfo['Bar base below fixation (cm)'] + .01),
+        (bar_width_vert[1], 0 - taskInfo['Bar base below fixation (cm)'] + .01),
+        (bar_width_vert[1], 0 - taskInfo['Bar base below fixation (cm)'])
+        ]
+
+original_vert = vert
+
+fillBar = FillingBar(
+                win = win,
+                vert = vert
+                )
+
+#---------------------------------------------------
+# The Background Bar (Bar)
+#---------------------------------------------------
+# "fullvert" = vertices of the static background bar
+fullvert = [(bar_width_vert[0], 0 - taskInfo['Bar base below fixation (cm)']),
+            (bar_width_vert[0], taskInfo['Bar top above fixation (cm)']),
+            (bar_width_vert[1], taskInfo['Bar top above fixation (cm)']),
+            (bar_width_vert[1], 0 - taskInfo['Bar base below fixation (cm)'])
+            ]
+
+Bar = visual.ShapeStim(
+                win, vertices=fullvert,
+                fillColor='white',
+                lineWidth=0,
+                opacity=1,
+                units='cm'
+                )
+
+#---------------------------------------------------
+# The Target Arrows
+#---------------------------------------------------
+# OSARI denotes the 'target' through two equilateral triangles
+# The inner most point of the triangles (pointing towards eachother) act as the target line
+# Triangles were used so that a line was not superimposed onto the background bar
+
+# The target width
+target_width = 0.5 
+
+# Right Target Arrow
+targetArrowRightvert = [(1.5, Target_pos),
+                        (1.5 + target_width, Target_pos + (target_width / np.sqrt(3))),
+                        (1.5 + target_width, Target_pos - (target_width / np.sqrt(3)))
+                        ]
+
+targetArrowRight = visual.ShapeStim(
+                win,
+                vertices=targetArrowRightvert,
+                fillColor='gray',
+                lineWidth=0,
+                opacity=1,
+                units='cm'
+                )
+
+# Left Target Arrow
+targetArrowLeftvert = [
+                (-1.5 - target_width, Target_pos + (target_width / np.sqrt(3))),
+                (-1.5 - target_width, Target_pos - (target_width / np.sqrt(3))),
+                (-1.5, Target_pos)
+                ]
+
+targetArrowLeft = visual.ShapeStim(
+                win,
+                vertices=targetArrowLeftvert,
+                fillColor='gray',
+                lineWidth=0,
+                opacity=1,
+                units='cm'
+                )
+
+#======================================
+# Set the stimulus colors
+#======================================
+if more_task_info[1]['color blind palette?']:
+    palette = ['#009E73', '#F0E442', '#E69F00', '#D55E00']
+else:
+    palette = ['Green', 'Yellow', 'Orange', 'Red']
+
+#======================================
+# Begin task
+#======================================
+# At the beginning of the task, participants will be presented with the welcome image followed by the go instructions
+
+#---------------------------------------------------
+# Welcome Image
+#---------------------------------------------------
+welcome_image = visual.ImageStim(
+                win,
+                image='Stimuli' + os.sep + 'welcome_image.jpeg',
+                units='norm',
+                size=(2, 2),
+                interpolate = True
+                )
+
+welcome_image.draw()
+win.flip()
+keyWatch(thisExp=thisExp)
+
+#---------------------------------------------------
+# Go Instructions
+#---------------------------------------------------
+go_instr_image.draw()
+win.flip()
+keyWatch(thisExp=thisExp)
+
+#======================================
+# Initialise Trials
+#======================================
+# Trial loop
+height = 0
+correct = []
+ITI = 2 # the inter-trial interval or wait period
+
+#======================================
+# Start the task
+#======================================
+for i, block in enumerate(thisExp.loops):
+    # iterate through the set of trials we have been given for this block
+    for thisTrial in block:
+        #---------------------------------------------------
+        # Warning of upcoming trials and further instructions
+        #---------------------------------------------------
+        # if this is a practice go block
+        if block.name == 'practiceGoTrials':
+            # and if this is the first repetition of this block,
+            if block.thisRepN == 0 and block.thisTrialN ==0:
+                # warn of upcoming practice block of go trials
+                instructionsText['practiceGoWarning'].draw()
+                win.flip()
+                keyWatch(thisExp=thisExp)
+        # if this is a test go block
+        if block.name == 'testGoBlocks':
+            if block.thisRepN == 0 and block.thisTrialN ==0:
+                # ask participant if they understand the task
+                instructionsText['doYouUnderstand'].draw()
+                win.flip()
+                understand = event.waitKeys(keyList=['y', 'n'])
+                if understand[0] == 'n':
+                    thisExp.close()
+                    core.quit()
+                # warn of upcoming test block of go trials
+                instructionsText['testGoWarning'].draw()
+                win.flip()
+                keyWatch(thisExp=thisExp)
+        # if this is a practice block of go and stop trials
+        if block.name == 'practiceMixedTrials':
+            if block.thisRepN == 0 and block.thisTrialN ==0:
+                stop_instr_image.draw()
+                win.flip()
+                keyWatch(thisExp=thisExp)
+               # warn of upcoming practice mixed block of trials
+                instructionsText['practiceMixedWarning'].draw()
+                win.flip()
+                keyWatch(thisExp=thisExp)
+        # if this is a test block of go and stop trials
+        if block.name == 'testBlocks':
+            # If practice trials were not selected
+            if block.thisRepN == 0 and block.thisTrialN == 0 and more_task_info[0]['Practice trials']==False:
+                # give the stop instruction image
+                stop_instr_image.draw()
+                win.flip()
+                keyWatch(thisExp=thisExp)
+            if block.thisRepN == 0 and block.thisTrialN ==0:
+                # ask participant if they understand the task
+                instructionsText['doYouUnderstand'].draw()
+                win.flip()
+                understand = event.waitKeys(keyList=['y','n'])
+                if understand[0] == 'n':
+                    thisExp.close()
+                    core.quit()
+                # warn of upcoming test block of mixed trials
+                instructionsText['testMixedWarning'].draw()
+                win.flip()
+                keyWatch(thisExp=thisExp)
+                # Set the stopTime to the starting stop-signal delay (SSD) requested
+                stoptime = taskInfo['StopS start pos. (seconds)']
+                correct = []  # Reset correct
+                trial_label = 'main'
+            #---------------------------------------------------
+            # Give feedback after each test block is completed
+            #---------------------------------------------------
+            elif block.thisRepN > 0 and block.thisTrialN == 0:
+                # set message
+                Blocks_completed = visual.TextStim(
+                                win, pos=[0, 0],
+                                height=1,
+                                color=[1, 1, 1],
+                                text=f"Block {block.thisRepN} of {block.nReps} complete!\n\nPress space when ready to continue",
+                                units='cm'
+                                )
+                # draw the message
+                Blocks_completed.draw()
+                win.flip()
+                core.wait(3)# Wait at least 3 seconds untill a key press is registered
+                keyWatch(thisExp=thisExp)
+        #---------------------------------------------------
+        # Set or Reset variables at the beginning of the trial
+        #---------------------------------------------------
+        # Set or reset the target arrows to be gray
+        targetArrowRight.fillColor = 'gray'
+        targetArrowLeft.fillColor = 'gray'
+        trial_label = block.name
+        # Set or reset the SSD (only relevant if it is a stop trial)
+        if not more_task_info[0]['Method'] == 'fixed':
+            stoptime = calculateStopTime(
+                            correct, stoptime,
+                            more_task_info[1]['Lowest SSD (s)'],
+                            more_task_info[1]['Highest SSD (s)'],
+                            more_task_info[1]['Step size (s)']
+                            )
+        elif more_task_info[0]['Method'] == 'fixed':
+            stoptime = int(thisTrial['fixedStopTime'])
+        # Reset correct
+        correct = []
+        # Set the SSD  
+        Signal = thisTrial['Signal']
+        if Signal == 1:
+            # If stop trial, this_stoptime (SSD) = stoptime
+            this_stoptime = stoptime
+        else:
+            # If go trial, SSD is just trial length
+            this_stoptime = trial_length
+        #---------------------------------------------------
+        # Begin trial
+        #---------------------------------------------------
+        # Tell participant to hold response key down
+        instructionsText['pressHold'].draw()
+        win.flip()
+        kb.start()  # Watch for the response key to be depressed
+        kb.clearEvents()
+        k = keyWatch(thisExp = thisExp, keyList=[more_task_info[1]['Response key']])
+        # Reset the vertices to their begining position
+        fillBar.vertices = original_vert  # vert
+        # Count down before trial starts
+        if more_task_info[1]['Count down']:
+            countdown()
+        stimList = [targetArrowLeft, targetArrowRight, Bar, fillBar]
+        for stim in stimList:
+            stim.setAutoDraw(True)
+        # Set autoDraw for the stimulus elements before trial starts
+        #   (Note: draw order is defined by the order in which setAutoDraw is called)
+        # Record the frame intervals for the interested user
+        win.frameIntervals = []
+        win.recordFrameIntervals = True
+        # "waiting" are we waiting for the key to be lifted
+        waiting = 1
+        win.flip()
+        jitter = np.random.choice(np.arange(.5, 1, .05), 1)
+        core.wait(jitter)
+        # We want bar height and time elapsed to be 0 at this point
+        height = 0
+        time_elapsed = 0
+        win.callOnFlip(kb.clock.reset)
+        win.flip()
+        # Whilst we are waiting for the button to be lifted
+        while time_elapsed < trial_length and waiting == 1:
+            # Watch the keyboard for a response
+            remainingKeys = kb.getKeys(
+                            keyList=[more_task_info[1]['Response key'],
+                            'escape'],
+                            waitRelease=False,
+                            clear=False
+                            )
+            # Record how much time has elapsed since the start of the trial
+            time_elapsed = kb.clock.getTime()
+            height = setHeight(
+                            time_elapsed,
+                            this_stoptime,
+                            bar_height,
+                            trial_length
+                            )
+            # If the key has been depressed (i.e. there is something in the keyboard events) ...
+            # ... draw the filling bar. This will stop if key lift detected.
+            if remainingKeys:
+                for key in remainingKeys:
+                    if key.duration:
+                        lift_time = kb.clock.getTime()
+                        kd_start_synced = key.duration - np.abs(
+                                        (key.tDown - kb.clock.getLastResetTime())
+                                        )
+                        kb.clearEvents()  # clear the key events
+                        waiting = 0
+                    # Set the vertices of the filling bar
+                    fillBar.fill(vert, height)
+                    # Reset vertices to original position
+                    vert = fillBar.resetVert(vert, height)
+                    win.flip()
+        # Stop recording frame intervals
+        win.recordFrameIntervals = False
+        # If this was a stop trial then the above while loop will have broken when the stoplimit was
+        # reached. but, we still want to wait until the end of the trial to make sure they
+        # actually hold and don't lift as soon as the stop limit is reached
+        #---------------------------------------------------
+        # End of Trial:
+        #---------------------------------------------------
+        kb.stop()  # Stop watching the keyboard
+        # if the bar has filled but we are still waiting for the key to lift
+        if waiting == 1:
+            kd_start_synced = 'NaN'
+            lifted = 0
+            RT = 'NaN'
+            #'''''''''''''''''''''''''''''''''''''''''''''''''''
+            # Conditional feedback on go trials
+            #'''''''''''''''''''''''''''''''''''''''''''''''''''
+            if Signal == 0:
+                feedback = instructionsText['incorrectStop']
+                # Change the colour of the target arrows based on feedback
+                targetArrowRight.fillColor = palette[3]
+                targetArrowLeft.fillColor = palette[3]
+                correct = -2
+            #'''''''''''''''''''''''''''''''''''''''''''''''''''
+            # Conditional feedback on stop trials
+            #'''''''''''''''''''''''''''''''''''''''''''''''''''
+            elif Signal == 1:
+                correct = 2
+                # Change the colour of the target Arrows
+                targetArrowRight.fillColor = palette[0]
+                targetArrowLeft.fillColor = palette[0]
+                feedback = instructionsText['correctStop']
+        # If the key was lifted before the bar filled
+        else:
+            # If this was a stop trial give feedback that the participant incorrectly stopped 
+            lifted = 1
+            RT = lift_time
+            if Signal == 0:
+                #'''''''''''''''''''''''''''''''''''''''''''''''''''
+                # Correct Go Feedback
+                #'''''''''''''''''''''''''''''''''''''''''''''''''''
+                correct = 1
+                targetArrowRight.fillColor = setTargetCol(kd_start_synced, Target_time, palette)
+                targetArrowLeft.fillColor = setTargetCol(kd_start_synced, Target_time, palette)
+                if RT > .100:
+                    feedback = instructionsText['correctGo']
+                else:
+                    feedback = instructionsText['almostGo']
+            elif Signal == 1:
+                #'''''''''''''''''''''''''''''''''''''''''''''''''''
+                # Incorrect Go (i.e., prematue lift) 
+                #'''''''''''''''''''''''''''''''''''''''''''''''''''
+                feedback = instructionsText['incorrectGo']
+                targetArrowRight.fillColor = palette[3]
+                targetArrowLeft.fillColor = palette[3]
+                correct = -1
+        if more_task_info[1]['Trial by trial feedback']:
+            feedback.setAutoDraw(True)
+        win.flip()
+        if Signal == 0:
+            this_stoptime = 'NaN'
+        #---------------------------------------------------
+        # Write data to .txt file
+        #---------------------------------------------------
+        with open(Output + '.txt', 'a') as b:
+            b.write(f'{block.thisRepN} {trial_label} {block.thisTrialN} {Signal} {lifted} {this_stoptime} {kd_start_synced}\n')
+        #---------------------------------------------------
+        # Write data to .csv file
+        #---------------------------------------------------
+        # Column headers
+        colHeaders=[
+            'block',
+            'trialType',
+            'trial',
+            'signal',
+            'response',
+            'ssd',
+            'rt'
+            ]
+        # Column values for given trial
+        values =[
+            i,
+            trial_label,
+            block.thisTrialN,
+            Signal,
+            lifted,
+            this_stoptime,
+            kd_start_synced
+            ]
+        for idx, header in enumerate(colHeaders):
+            thisExp.addData(header, values[idx])
+        thisExp.nextEntry()
+        core.wait(ITI)
+        # Reset visual stimuli for next trial
+        stimList = [
+            feedback,
+            targetArrowLeft,
+            targetArrowRight,
+            Bar,
+            fillBar]
+        for stim in stimList:
+            stim.setAutoDraw(False)
+#======================================
+# End Task
+#======================================
+EndMessage = visual.TextStim(
+                win, pos=[0, 0.4],
+                height=1, units='cm',
+                color=[1, 1, 1],
+                text="The End!\nThanks for taking part!\n[press a key to end]"
+                )
+EndMessage.draw()
+win.flip()
+event.waitKeys()
+thisExp.close()
+core.quit()
