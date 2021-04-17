@@ -17,7 +17,6 @@ Running OSARI will require you to have PsychoPy installed (see: https://www.psyc
 ## The Task 
 OSARI presents participants with a white 'background bar', with two gray arrows on the left and right side of the top end of the bar. The gray arrows are 'target arrows'.
 
-![alt text](https://i.imgur.com/64VQeiZ.png)
 
 OSARI has two types of trials:
   * Go trials
@@ -27,7 +26,7 @@ OSARI has two types of trials:
 
 Example of the filling bar on a go trial:
 
-![alt text](https://i.imgur.com/ZI9R9Zh.png)
+<img src="/media/example-go.gif" width="60%"/>
 
 Example of feedback on a go trial where the participant managed to stop the bar close enough to the target arrows for the arrows to turn green:
 
