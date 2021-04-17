@@ -1,11 +1,10 @@
 # Open-Source Aniticipated Response Inhibition task (OSARI)
-Written by Rebecca J Hirst, Rohan Puri Jason L He
 
 Created in PsychoPy v3.1.2
 
 Last edited: 31/03/2021
 
-Paradigm created to supplement the following article:
+If using this task please cite:
 
 He, J. L , Hirst, R. J , Pedapati, E., Byblow, W., Chowdhury, N., Coxon, J., Gilbert, Donald., Heathcote, A., Hinder, M., Hyde, C., Silk. T., Leunissen, I., McDonald, H., Nikitenko, T., Puri, R., Zandbelt, B., Puts, N. (In prep) Open-Source Anticipated Response Inhibition task (OSARI): a cross-platform installation and analysis guide. 
 
@@ -91,22 +90,22 @@ Data is contained in the .txt and .csv files. The .txt file saves the main detai
     
 ### Basic information 
     
-    Block: block number
+**Block**: block number
 
-    TrialType: Practice or real trial
+**TrialType**: Practice or real trial
 
-    Trial: Trial number_text
+**Trial**: Trial number_text
 
-    Signal: 0 = Go
+**Signal**: 0 = Go
             1 = Stop
 
-    Response: What the participants response was ( 0 = no lift, 1 = lift)
+**Response**: What the participants response was ( 0 = no lift, 1 = lift)
 
-    RT: Lift time of participants relative to the starting line (to 2 decimal places)
+**RT**: Lift time of participants relative to the starting line (to 2 decimal places)
 
-    SSD: Stop Signal Distance (relative to starting line) if the trial was a stop trial.
+**SSD**: Stop Signal Distance (relative to starting line) if the trial was a stop trial.
     
-    For details on psydat and log files see 
+For details on psydat and log files see 
         https://www.psychopy.org/general/dataOutputs.html#:~:text=PsychoPy%20data%20file%20(.-,psydat),python%20and%2C%20probably%2C%20matplotlib.
         
 ## Analysing the data
@@ -116,5 +115,6 @@ There are currently two ways to analyse the data you collect using OSARI. First,
 
 ## About the OSTAP team
 
+The OSTAP team are a group of psychologists/cognitive scientists that like making open source tasks for fun.
 
 
