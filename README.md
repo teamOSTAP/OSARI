@@ -24,31 +24,15 @@ OSARI has two types of trials:
 
 *Go* trials require participants to stop a filling bar as close as possible to the target arrows. The filling bar will begin 'filling' when participants have depressed a computer key, and will stop filling when they release the key. Participants will be given feedback on each trial.
 
-Example of the filling bar on a go trial:
+Example of the filling bar on a go trial. The arrows will turn red if the participant stops the bar very far from the target line:
 
 <img src="/media/example-go.gif" width="60%"/>
-
-Example of feedback on a go trial where the participant managed to stop the bar close enough to the target arrows for the arrows to turn green:
-
-![alt text](https://i.imgur.com/WfyeFvX.png)
-
-Example of when the filling bar was stopped on a go trial, but too far from the target line, resulting in the arrows turning amber:
-
-![alt text](https://i.imgur.com/bfsAI3j.png)
-
-The arrows will turn red if the participant stops the bar very far from the target line:
-
-![alt text](https://i.imgur.com/HFYrFlC.png)
-
-Or if the participant does not make a response at all:
-
-![alt text](https://i.imgur.com/t4enmYo.png)
 
 For go trials, emphasise to the participant that they should try and keep the arrows green.
 
 *Stop* trials require participants to keep the computer key depressed rather than releasing the computer key (as they would in a go trial) when the filling bar ceases to fill automatically (i.e., the bar stops on its own, acting as a stop-signal). If participants are able to keep the key depressed until the end of the trial, they will be provided with feedback as so:
 
-![alt text](https://i.imgur.com/W0YgoHY.png)
+<img src="/media/example-stop.gif" width="60%"/>
 
 If participants are not able to keep the key depressed, then they will be given the feedback:
 
