@@ -12,7 +12,7 @@ He, J. L , Hirst, R. J , Puri, R.,Coxon, J., Byblow, W., Hinder, M., Skippen, P.
 Anticipated response inhibition (ARI) tasks are a version of the stop-signal paradigm that have seen increasing use in cognitivie neuroscience. This project provides a free-to-use Open-Source Anticipated Response Inhibition (OSARI) developed in PsychoPy and openly available for ongoing contributions and development.
 
 ## Getting Started
-Running OSARI will require you to have PsychoPy installed (see: https://www.psychopy.org/download.html). Once PsychoPy is installed, you can run OSARI from within coder view or your chosed development environment. OSARI was originally developed in pure python code, but the code components used here can be easily translated into builder view for more intuitive use and adaptations (we have started this transition to create [a version of OSARI that runs in browser](https://run.pavlovia.org/lpxrh6/osari_online) you can find the files associated with this [here](https://pavlovia.org/lpxrh6/osari_online). Here we provide a quick introduction to the task. For a more in-depth explanation, see the cited manuscript. 
+Running OSARI will require you to have [PsychoPy installed](https://www.psychopy.org/download.html). Once PsychoPy is installed, you can run OSARI from within coder view or your chosed development environment. OSARI was originally developed in pure python code, but the code components used here can be easily translated into builder view for more intuitive use and adaptations (we have started this transition to create [a version of OSARI that runs in browser](https://run.pavlovia.org/lpxrh6/osari_online) you can find the files associated with this [here](https://pavlovia.org/lpxrh6/osari_online). Here we provide a quick introduction to the task. For a more in-depth explanation, see the cited manuscript. 
 
 ## The Task 
 OSARI presents participants with a white 'background bar', with two gray arrows on the left and right side of the top end of the bar. The gray arrows are 'target arrows'.
@@ -69,7 +69,7 @@ In the .csv files, each row is a trial. The Signal column determines the trial t
 
 naming format: s_[participant ID]_OSARI_[year]_[month]_[date]_[timestamp].csv
 
-Data is contained in the .txt and .csv files. The .txt file saves the main details of interest but csv stores further details.
+Data is contained in the .txt and .csv files. The .txt file saves the main details of interest but csv stores further details. [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
     
 ### Basic information 
     
@@ -87,9 +87,6 @@ Data is contained in the .txt and .csv files. The .txt file saves the main detai
 **RT**: Lift time of participants relative to the starting line (to 2 decimal places)
 
 **SSD**: Stop Signal Distance (relative to starting line) if the trial was a stop trial.
-    
-For details on psydat and log files see 
-        https://www.psychopy.org/general/dataOutputs.html#:~:text=PsychoPy%20data%20file%20(.-,psydat),python%20and%2C%20probably%2C%20matplotlib.
         
 ## Analysing the data
 There are currently two ways to analyse the data you collect using OSARI. First, OSTAP provides the batch analysis of stop-signal task data (BASTD), which exists as a separate repository in our GitHub. Second, users may also analyse task performance using the Dynamic Models of Choice (DMC) R system, which can be accessed at: osf.io/tw46u/. Please see the manuscript for further information. 
