@@ -8,15 +8,14 @@ Authors: Rebecca J Hirst [1] Rohan Puri [2] Jason L He [3]
 Mail to Authors:  opensourceTAP@gmail.com
 
 Input:
-    4 csv files:
-        practiceGoTrials.csv
-        testGoBlocks.csv
-        practiceMixedTrials.csv
-        testBlocks.csv
+    5 xlsx files:
+        practiceGoTrials.xlsx
+        testGoBlocks.xlsx
+        practiceMixedTrials.xlsx
+        testBlocks.xlsx
+        instructions.xlsx
 
-    In all csv files each row corresponds to a trial, so the number of rows will correspond to the number
-    of trials in a block. Note, that the order of trial presentation will be random unless the user specifies otherwise.
-    0 = Go 1 = Stop
+    See header comments for details on each parameter. 
 
 Output:
 
@@ -136,7 +135,7 @@ if not expInfo['Default parameters?']:
                                               'mixed go/stop blocks?',
                               'Method': 'What SSD method do you want?',
                               'Trial order': 'Do you want trials to be in a random order or in the order you have set '
-                                             'in the conditions .csv file [sequential]'
+                                             'in the conditions .xlsx file [sequential]'
                                              })
     if not dlg.OK: core.quit()
 else:
@@ -156,9 +155,9 @@ if not expInfo['Default parameters?']:
                               'Lowest SSD (s)': 'The lowest the SSD can go in ms - e.g., 0.05 is 50ms',
                               'Highest SSD (s)': 'The highest the SSD can go in ms - e.g., 0.775 is 775ms',
                               'Total bar height (in cm)': 'The total height of the bar',
-                              'Number of Test Blocks': 'Number of test blocks [i.e. number of times trials in .csv '
+                              'Number of Test Blocks': 'Number of test blocks [i.e. number of times trials in .xlsx '
                                                        'file will be repeated. To set trial number and proportion of '
-                                                       'stop vs. go edit the .csv file]',
+                                                       'stop vs. go edit the .xlsx file]',
                               'Full Screen': 'Do you want to run the task with Full Screen - recommended'
                               })
     if not dlg.OK: core.quit()
@@ -273,7 +272,7 @@ logging.console.setLevel(logging.WARNING)
 
 condFileList = [] # Create a list to store the block conditions
 
-# The condition files are excel or .csv files that contain two columns and X number of rows
+# The condition files are excel or .xlsx files that contain two columns and X number of rows
     # with 'X' being the number of rows the user wants the participant's to complete
     # The columns are 'Signal' and 'fixedStopTime'
 
@@ -286,7 +285,7 @@ condFileList = [] # Create a list to store the block conditions
 #---------------------------------------------------
 if more_task_info[0]['Practice trials']: # if practice was selected
     condFileList.append(
-                    ['conditionFiles/practiceGoTrials.csv', 1]
+                    ['conditionFiles/practiceGoTrials.xlsx', 1]
                     )
 
 #---------------------------------------------------
@@ -294,7 +293,7 @@ if more_task_info[0]['Practice trials']: # if practice was selected
 #---------------------------------------------------
 if more_task_info[0]['All Go block']: # if test go block was selected
     condFileList.append(
-                    ['conditionFiles/testGoBlocks.csv', 1]
+                    ['conditionFiles/testGoBlocks.xlsx', 1]
                     )
 
 #---------------------------------------------------
@@ -302,14 +301,14 @@ if more_task_info[0]['All Go block']: # if test go block was selected
 #---------------------------------------------------
 if more_task_info[0]['Practice trials']:  # if practice was selected
     condFileList.append(
-                    ['conditionFiles/practiceMixedTrials.csv', 1]
+                    ['conditionFiles/practiceMixedTrials.xlsx', 1]
                     )
 
 #---------------------------------------------------
 # Test Mixed Block
 #---------------------------------------------------
 condFileList.append(
-                ['conditionFiles/testBlocks.csv',
+                ['conditionFiles/testBlocks.xlsx',
                 more_task_info[1]['Number of Test Blocks']
                 ]
                 )
@@ -318,7 +317,7 @@ condFileList.append(
 # Create trial handler object based on selected blocks
 #---------------------------------------------------
 for cond in condFileList:
-    thisConditions = data.importConditions(cond[0])  # import the .csv file
+    thisConditions = data.importConditions(cond[0])  # import the .xlsx file
     thisfilename = path.split(cond[0])[1]
     thisTrials = data.TrialHandler(
                     trialList=thisConditions,
@@ -326,7 +325,7 @@ for cond in condFileList:
                     method=more_task_info[0]['Trial order'],
                     name=path.splitext(thisfilename)[0],
                         autoLog=True
-                    )  # name of loop is .csv filename
+                    )  # name of loop is .xlsx filename
     thisExp.addLoop(thisTrials)
 
 #======================================

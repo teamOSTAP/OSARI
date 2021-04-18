@@ -51,13 +51,14 @@ If you come by any issues, or if you need help with getting started with the tas
 
 ### Input files:
     
-3 csv files:
-  * practiceGoTrials.csv
-  * practiceMixedTrials.csv
-  * testBlocks.csv
+4 xlsx files:
+  * practiceGoTrials.xlsx
+  * testGoBlocks.xlsx
+  * practiceMixedTrials.xlsx
+  * testBlocks.xlsx
   * instructions.xlsx
     
-In the .csv files, each row is a trial. The Signal column determines the trial type (0 = go trial and 1 = stop trial). The fixedStopTime column is used for putting in a SSD when you are using fixed rather than staircased SSDs. The value of fixedStopTime cells need to between 0 and 1 (for eg., a fixedStopTime of 0.5 means a SSD of 500 ms - the bar will stop 500 ms into the trial). For more information about how to setup the .csv files, please refer to the instructions.xlsx file.
+In the .xlsx files, each row is a trial. The Signal column determines the trial type (0 = go trial and 1 = stop trial). The fixedStopTime column is used for putting in a SSD when you are using fixed rather than staircased SSDs. The value of fixedStopTime cells need to between 0 and 1 (for eg., a fixedStopTime of 0.5 means a SSD of 500 ms - the bar will stop 500 ms into the trial). 
 
 ### Output files:
     
