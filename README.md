@@ -1,6 +1,6 @@
 # Open-Source Aniticipated Response Inhibition task (OSARI)
 
-Created in PsychoPy v3.1.2
+Originally created in PsychoPy v3.1.2 updated in v2020.2.10
 
 Last edited: 31/03/2021
 
