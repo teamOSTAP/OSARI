@@ -36,7 +36,7 @@ For go trials, emphasise to the participant that they should try and keep the ar
 
 If participants are not able to keep the key depressed, then they will be given the feedback:
 
-![alt text](https://i.imgur.com/2hPiMoN.png)
+<img src="/media/static-incorrect-stop.gif" width="60%"/>
 
 ## Default settings and customisation
 Go and Stop trials are presented with a set proportion, but in a random order. The stop-signal delays (SSDs) is adapted based on participant performance (i.e. staircased). By default, participants complete:
