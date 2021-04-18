@@ -6,13 +6,13 @@ Last edited: 31/03/2021
 
 If using this task please cite:
 
-He, J. L , Hirst, R. J , Puri, R.,Coxon, J., Byblow, W., Hinder, M., Skippen, P., Matzke, D., Heathcote, A., Wadsley, C.G., Hyde, C., Parmar., D., Pedapati, E., Gilbert, D.L., Huddleston, D.A., Motofsky, S., Leunissen, I., McDonald, H., Chowdhury, N., Gretton, M., Nikitenko, T., Zandbelt, B., Luke., Strickland., Puts, N. (In prep) OSARI, an Open-Source Anticipated Response Inhibition task
+He, J. L , Hirst, R. J , Puri, R.,Coxon, J., Byblow, W., Hinder, M., Skippen, P., Matzke, D., Heathcote, A., Wadsley, C.G., Hyde, C., Parmar., D., Pedapati, E., Gilbert, D.L., Huddleston, D.A., Motofsky, S., Leunissen, I., McDonald, H., Chowdhury, N., Gretton, M., Nikitenko, T., Zandbelt, B., Luke., Strickland., Puts, N. (In prep) *OSARI, an Open-Source Anticipated Response Inhibition task*
 
 ## About OSARI
 Anticipated response inhibition (ARI) tasks are a version of the stop-signal paradigm that have seen increasing use in cognitivie neuroscience. This project provides a free-to-use Open-Source Anticipated Response Inhibition (OSARI) developed in PsychoPy and openly available for ongoing contributions and development.
 
 ## Getting Started
-Running OSARI will require you to have PsychoPy installed (see: https://www.psychopy.org/download.html). Once PsychoPy is installed, you can run OSARI like you would any other task. OSARI was originally developed within coder view, but the code components used here can be easily translated into builder view for more intuitive use and adaptations. Here we provide a quick introduction to the task. For a more in-depth explanation, see the cited manuscript. 
+Running OSARI will require you to have PsychoPy installed (see: https://www.psychopy.org/download.html). Once PsychoPy is installed, you can run OSARI from within coder view or your chosed development environment. OSARI was originally developed in pure python code, but the code components used here can be easily translated into builder view for more intuitive use and adaptations (we have started this transition to create [a version of OSARI that runs in browser](https://run.pavlovia.org/lpxrh6/osari_online) you can find the files associated with this [here](https://pavlovia.org/lpxrh6/osari_online). Here we provide a quick introduction to the task. For a more in-depth explanation, see the cited manuscript. 
 
 ## The Task 
 OSARI presents participants with a white 'background bar', with two gray arrows on the left and right side of the top end of the bar. The gray arrows are 'target arrows'.
