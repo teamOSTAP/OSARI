@@ -13,6 +13,7 @@ Input:
         testGoBlocks.xlsx
         practiceMixedTrials.xlsx
         testBlocks.xlsx
+        instructions.xlsx
 
     See header comments for details on each parameter. 
 
