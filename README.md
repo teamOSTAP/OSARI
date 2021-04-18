@@ -51,35 +51,35 @@ If you come by any issues, or if you need help with getting started with the tas
 
 ### Input files:
     
-Four xlsx files:
-  * practiceGoTrials.xlsx
-  * testGoBlocks.xlsx
-  * practiceMixedTrials.xlsx
-  * testBlocks.xlsx
-  * instructions.xlsx
-    
+Four xlsx files in `connditionsFiles`:
+  * `instructions.xlsx` : text instructions and feedback presented during the task
+  * `practiceGoTrials.xlsx` : trial info of the practice go block
+  * `testGoBlocks.xlsx` : trial info of the main ("test") go block
+  * `practiceMixedTrials.xlsx`: trial info of the practice mixed (Go and Stop) block
+  * `testBlocks.xlsx` : : trial info of each main ("test") mixed block
+
 In the `.xlsx` files, each row is a trial. The *Signal* column determines the trial type (0 = go trial and 1 = stop trial). The *fixedStopTime* column is used for putting in a SSD when you are using fixed rather than staircased SSDs. The value of *fixedStopTime* cells need to between 0 and 1 (eg., a fixedStopTime of 0.5 means a SSD of 500 ms - the bar will stop 500 ms into the trial). 
 
 ### Output files:
     
-Four output files are generated with the format `ID_OSARI_yyyy_mm_d_hhmm` where ID = participant ID, yyyy = year, mo = month in string format, d = day in numeric format, h = hour and m = minute. The `.csv` and `.txt` files are the primary data output files. [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
+Four output files are generated with the format `ID_OSARI_yyyy_mm_d_hhmm` where ID = participant ID, yyyy = year, mo = month in string format, d = day in numeric format, h = hour and m = minute. The primary data output file used by our analysis script are the `.txt` files stored in the `dataTxt/` subfolder. All other files are stored in `data/` `.csv` files include all additional data [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
     
 ### Basic information 
     
-**Block**: block number
+**block**: Block number
 
-**TrialType**: Practice or real trial
+**trialType**: Practice or real trial
 
-**Trial**: Trial number_text
+**trial**: Trial number within a block
 
-**Signal**: 0 = Go
+**signal**: 0 = Go
             1 = Stop
 
-**Response**: What the participants response was ( 0 = no lift, 1 = lift)
+**response**: What the participants response was ( 0 = no lift, 1 = lift)
 
-**RT**: Lift time of participants relative to the starting line (to 2 decimal places)
+**rt**: Lift time of participants relative to the starting line
 
-**SSD**: Stop Signal Distance (relative to starting line) if the trial was a stop trial.
+**ssd**: Stop Signal Distance (relative to starting line) if the trial was a stop trial (NaN for go trials).
         
 ## Analysing the data
 There are currently two ways to analyse the data you collect using OSARI. First, OSTAP provides the batch analysis of stop-signal task data (BASTD), which exists as a separate repository in our GitHub. Second, users may also analyse task performance using the Dynamic Models of Choice (DMC) R system, which can be accessed at: osf.io/tw46u/. Please see the manuscript for further information. 
