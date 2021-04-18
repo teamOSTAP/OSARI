@@ -62,15 +62,7 @@ In the .xlsx files, each row is a trial. The Signal column determines the trial 
 
 ### Output files:
     
-4 output files in format (see format details below):
-  * s_123_OSARI_2020_Jul_19_1307.log
-  * s_123_OSARI_2020_Jul_19_1307.csv
-  * s_123_OSARI_2020_Jul_19_1307.psydat
-  * s_123_OSARI_2020_Jul_19_1307.txt
-
-naming format: s_[participant ID]_OSARI_[year]_[month]_[date]_[timestamp].csv
-
-Data is contained in the .txt and .csv files. The .txt file saves the main details of interest but csv stores further details. [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
+Four output files are generated with the format [participant ID]_OSARI_[year]_[month]_[date]_[timestamp]  (see format details below). The .csv and .txt files are the primary data output files. [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
     
 ### Basic information 
     

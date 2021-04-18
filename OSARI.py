@@ -20,10 +20,10 @@ Input:
 Output:
 
     4 output files in format:
-        data/s_ID_OSARI_yyyy_mo_d_hhmm.log
-        data/s_ID_OSARI_yyyy_mo_d_hhmm.csv
-        data/s_ID_OSARI_yyyy_mo_d_hhmm.psydat
-        data_txt/s_ID_OSARI_yyyy_mo_d_hhmm.txt
+        data/ID_OSARI_yyyy_mo_d_hhmm.log
+        data/ID_OSARI_yyyy_mo_d_hhmm.csv
+        data/ID_OSARI_yyyy_mo_d_hhmm.psydat
+        data_txt/ID_OSARI_yyyy_mo_d_hhmm.txt
 
     ID = Participant ID ; yyyy = Year; mo = month
     d = day; h = hour; m = minute
@@ -232,7 +232,7 @@ for outDir in outDirs:
     if not os.path.exists(_thisDir + os.sep + outDir + os.sep):
         print(f'{outDir}folder did not exist, making one in current directory')
         os.makedirs(f'{_thisDir}{os.sep}{outDir}{os.sep}')
-    outFiles.append(f'{_thisDir}{os.sep}{outDir}{os.sep}s_{expInfo["Participant ID"]}_{expName}_{expInfo["date"]}')
+    outFiles.append(f'{_thisDir}{os.sep}{outDir}{os.sep}{expInfo["Participant ID"]}_{expName}_{expInfo["date"]}')
 
 # Write header for txt file (i.e., column names)
 Output = outFiles[0]
