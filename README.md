@@ -51,18 +51,18 @@ If you come by any issues, or if you need help with getting started with the tas
 
 ### Input files:
     
-4 xlsx files:
+Four xlsx files:
   * practiceGoTrials.xlsx
   * testGoBlocks.xlsx
   * practiceMixedTrials.xlsx
   * testBlocks.xlsx
   * instructions.xlsx
     
-In the .xlsx files, each row is a trial. The Signal column determines the trial type (0 = go trial and 1 = stop trial). The fixedStopTime column is used for putting in a SSD when you are using fixed rather than staircased SSDs. The value of fixedStopTime cells need to between 0 and 1 (for eg., a fixedStopTime of 0.5 means a SSD of 500 ms - the bar will stop 500 ms into the trial). 
+In the `.xlsx` files, each row is a trial. The *Signal* column determines the trial type (0 = go trial and 1 = stop trial). The *fixedStopTime* column is used for putting in a SSD when you are using fixed rather than staircased SSDs. The value of *fixedStopTime* cells need to between 0 and 1 (eg., a fixedStopTime of 0.5 means a SSD of 500 ms - the bar will stop 500 ms into the trial). 
 
 ### Output files:
     
-Four output files are generated with the format [participant ID]_OSARI_[year]_[month]_[date]_[timestamp]  (see format details below). The .csv and .txt files are the primary data output files. [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
+Four output files are generated with the format `ID_OSARI_yyyy_mm_d_hhmm` where ID = participant ID, yyyy = year, mo = month in string format, d = day in numeric format, h = hour and m = minute. The `.csv` and `.txt` files are the primary data output files. [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
     
 ### Basic information 
     
