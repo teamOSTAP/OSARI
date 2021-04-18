@@ -4,7 +4,7 @@ Originally created in PsychoPy v3.1.2 updated in v2020.2.10
 
 Last edited: 31/03/2021
 
-If using this task please cite:
+**If using this task please cite**:
 
 He, J. L , Hirst, R. J , Puri, R.,Coxon, J., Byblow, W., Hinder, M., Skippen, P., Matzke, D., Heathcote, A., Wadsley, C.G., Hyde, C., Parmar., D., Pedapati, E., Gilbert, D.L., Huddleston, D.A., Motofsky, S., Leunissen, I., McDonald, H., Chowdhury, N., Gretton, M., Nikitenko, T., Zandbelt, B., Luke., Strickland., Puts, N. (In prep) *OSARI, an Open-Source Anticipated Response Inhibition task*
 
