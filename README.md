@@ -82,7 +82,7 @@ Four output files are generated with the format `ID_OSARI_yyyy_mm_d_hhmm` where 
 **ssd**: Stop Signal Distance (relative to starting line) if the trial was a stop trial (NaN for go trials).
         
 ## Analysing the data
-There are currently two ways to analyse the data you collect using OSARI. First, OSTAP provides the [Batch Analysis of Stop-signal Task Data (BASTD)](https://github.com/teamOSTAP/BASTD), which exists as a separate repository in our GitHub. Second, users may also analyse task performance using the Dynamic Models of Choice (DMC) R system, which can be accessed at: osf.io/tw46u/. Please see the manuscript for further information. 
+There are currently two ways to analyse the data you collect using OSARI. First, OSTAP provides the [Batch Analysis of Stop-signal Task Data (BASTD)](https://github.com/teamOSTAP/BASTD), which exists as a separate repository in our GitHub. Second, users may also analyse task performance using the [Dynamic Models of Choice (DMC) R system](osf.io/tw46u/). Please see the manuscript for further information. 
 
 # Thanks for using OSARI!! 
 
