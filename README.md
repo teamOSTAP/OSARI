@@ -4,7 +4,7 @@ Originally created in PsychoPy v3.1.2 updated in v2020.2.10
 
 Last edited: 31/03/2021
 
-If using this task please cite:
+**If using this task please cite**:
 
 He, J. L , Hirst, R. J , Puri, R.,Coxon, J., Byblow, W., Hinder, M., Skippen, P., Matzke, D., Heathcote, A., Wadsley, C.G., Hyde, C., Parmar., D., Pedapati, E., Gilbert, D.L., Huddleston, D.A., Motofsky, S., Leunissen, I., McDonald, H., Chowdhury, N., Gretton, M., Nikitenko, T., Zandbelt, B., Luke., Strickland., Puts, N. (In prep) *OSARI, an Open-Source Anticipated Response Inhibition task*
 
@@ -36,7 +36,7 @@ For go trials, emphasise to the participant that they should try and keep the ar
 
 If participants are not able to keep the key depressed, then they will be given the feedback:
 
-![alt text](https://i.imgur.com/2hPiMoN.png)
+<img src="/media/static-incorrect-stop.png" width="60%"/>
 
 ## Default settings and customisation
 Go and Stop trials are presented with a set proportion, but in a random order. The stop-signal delays (SSDs) is adapted based on participant performance (i.e. staircased). By default, participants complete:
@@ -51,26 +51,18 @@ If you come by any issues, or if you need help with getting started with the tas
 
 ### Input files:
     
-4 xlsx files:
+Four xlsx files:
   * practiceGoTrials.xlsx
   * testGoBlocks.xlsx
   * practiceMixedTrials.xlsx
   * testBlocks.xlsx
   * instructions.xlsx
     
-In the .xlsx files, each row is a trial. The Signal column determines the trial type (0 = go trial and 1 = stop trial). The fixedStopTime column is used for putting in a SSD when you are using fixed rather than staircased SSDs. The value of fixedStopTime cells need to between 0 and 1 (for eg., a fixedStopTime of 0.5 means a SSD of 500 ms - the bar will stop 500 ms into the trial). 
+In the `.xlsx` files, each row is a trial. The *Signal* column determines the trial type (0 = go trial and 1 = stop trial). The *fixedStopTime* column is used for putting in a SSD when you are using fixed rather than staircased SSDs. The value of *fixedStopTime* cells need to between 0 and 1 (eg., a fixedStopTime of 0.5 means a SSD of 500 ms - the bar will stop 500 ms into the trial). 
 
 ### Output files:
     
-4 output files in format (see format details below):
-  * s_123_OSARI_2020_Jul_19_1307.log
-  * s_123_OSARI_2020_Jul_19_1307.csv
-  * s_123_OSARI_2020_Jul_19_1307.psydat
-  * s_123_OSARI_2020_Jul_19_1307.txt
-
-naming format: s_[participant ID]_OSARI_[year]_[month]_[date]_[timestamp].csv
-
-Data is contained in the .txt and .csv files. The .txt file saves the main details of interest but csv stores further details. [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
+Four output files are generated with the format `ID_OSARI_yyyy_mm_d_hhmm` where ID = participant ID, yyyy = year, mo = month in string format, d = day in numeric format, h = hour and m = minute. The `.csv` and `.txt` files are the primary data output files. [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
     
 ### Basic information 
     
