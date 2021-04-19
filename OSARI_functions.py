@@ -1,3 +1,5 @@
+
+#These are internal functions used by the main OSARI.py code
 from psychopy import event, core
 from psychopy.visual.shape import ShapeStim
 
