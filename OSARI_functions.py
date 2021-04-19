@@ -93,7 +93,7 @@ def calculateStopTime(correct, stoptime, lower_ssd, upper_ssd, stepsize):
         stoptime = lower_ssd
     elif correct == 2 and round(stoptime, 3) < round(upper_ssd,3):
         stoptime = stoptime + stepsize
-    elif correct == 2 and round(stoptime, 3) == round(upper_ssd,3):  # never equal floats in python. so we use round.
+    elif correct == 2 and round(stoptime, 3) == round(upper_ssd,3):  
         stoptime = upper_ssd
     return stoptime
 
