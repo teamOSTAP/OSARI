@@ -66,8 +66,6 @@ def countdown():
                     countdownTime.reset()  # reset the countdown clock
         Bar.draw()
         fillBar.draw()
-        if more_task_info[1]['Spaceship']:
-            Spaceship.draw()
         targetArrowRight.draw()
         targetArrowLeft.draw()
         if countdownTime.getTime() > 0:
