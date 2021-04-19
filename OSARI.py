@@ -15,7 +15,7 @@ Input:
         testBlocks.xlsx
         instructions.xlsx
 
-    See header comments for details on each parameter. 
+    See header comments for details on each parameter.
 
 Output:
 
@@ -33,7 +33,7 @@ Output:
     TrialType: block label (practice/real all go/mixed)
     Trial: trial number
     Signal: 0 = Go
-            1 = Stop
+                1 = Stop
     Response: 0 = no lift, 1 = lift
     SSD: Stop Signal Distance (relative to start time) if the trial was a stop trial.
     RT: key lift time of participants relative to start time
@@ -116,7 +116,7 @@ except:
                         'Trial order': ['random', 'sequential']},
                       {'Count down': False,
                         'Trial by trial feedback': True,
-                        'Step size (s)': 0.025,     
+                        'Step size (s)': 0.025,
                         'Lowest SSD (s)': 0.05,
                         'Highest SSD (s)': 0.775,
                         'Total bar height (in cm)': 15,
@@ -149,7 +149,7 @@ else:
 if not expInfo['Default parameters?']:
     dlg = gui.DlgFromDict(dictionary=more_task_info[1], title='Additional parameters',
                           tip={
-                              'Count down': 'Do you want a countdown before the bar starts filling?',    
+                              'Count down': 'Do you want a countdown before the bar starts filling?',
                               'Trial by trial feedback': 'Do you want participants to receive trial to trial feedback',
                               'Step size (s)': 'What do you want the step size to be in ms - e.g., 0.025 is 25ms',
                               'Lowest SSD (s)': 'The lowest the SSD can go in ms - e.g., 0.05 is 50ms',
@@ -237,7 +237,7 @@ for outDir in outDirs:
 # Write header for txt file (i.e., column names)
 Output = outFiles[0]
 with open(Output + '.txt', 'a') as b:
-    b.write('block	trialType	trial	signal	response	ssd	rt\n')
+    b.write('block  trialType   trial   signal  response    correct ssd rt\n')
 
 #======================================
 # Experiment Handler
@@ -440,7 +440,7 @@ Bar = visual.ShapeStim(
 # Triangles were used so that a line was not superimposed onto the background bar
 
 # The target width
-target_width = 0.5 
+target_width = 0.5
 
 # Right Target Arrow
 targetArrowRightvert = [(1.5, Target_pos),
@@ -514,6 +514,7 @@ keyWatch(thisExp=thisExp)
 # Trial loop
 height = 0
 correct = []
+correctThisTrial = []
 ITI = 2 # the inter-trial interval or wait period
 
 #======================================
@@ -577,6 +578,8 @@ for i, block in enumerate(thisExp.loops):
                 instructionsText['testMixedWarning'].draw()
                 win.flip()
                 keyWatch(thisExp=thisExp)
+                #Store whether the response was correct = 2 or incorrect (correct = 0)
+                correctThisTrial = correct
                 # Set the stopTime to the starting stop-signal delay (SSD) requested
                 stoptime = taskInfo['StopS start pos. (seconds)']
                 correct = []  # Reset correct
@@ -617,7 +620,7 @@ for i, block in enumerate(thisExp.loops):
             stoptime = int(thisTrial['fixedStopTime'])
         # Reset correct
         correct = []
-        # Set the SSD  
+        # Set the SSD
         Signal = thisTrial['Signal']
         if Signal == 1:
             # If stop trial, this_stoptime (SSD) = stoptime
@@ -712,7 +715,7 @@ for i, block in enumerate(thisExp.loops):
                 # Change the colour of the target arrows based on feedback
                 targetArrowRight.fillColor = palette[3]
                 targetArrowLeft.fillColor = palette[3]
-                correct = -2
+                correct = 0 #omission error
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
             # Conditional feedback on stop trials
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -724,14 +727,14 @@ for i, block in enumerate(thisExp.loops):
                 feedback = instructionsText['correctStop']
         # If the key was lifted before the bar filled
         else:
-            # If this was a stop trial give feedback that the participant incorrectly stopped 
+            # If this was a stop trial give feedback that the participant incorrectly stopped
             lifted = 1
             RT = lift_time
             if Signal == 0:
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
                 # Correct Go Feedback
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
-                correct = 1
+                correct = 2
                 targetArrowRight.fillColor = setTargetCol(kd_start_synced, Target_time, palette)
                 targetArrowLeft.fillColor = setTargetCol(kd_start_synced, Target_time, palette)
                 if RT > .100:
@@ -740,12 +743,12 @@ for i, block in enumerate(thisExp.loops):
                     feedback = instructionsText['almostGo']
             elif Signal == 1:
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
-                # Incorrect Go (i.e., prematue lift) 
+                # Incorrect Go (i.e., prematue lift)
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
                 feedback = instructionsText['incorrectGo']
                 targetArrowRight.fillColor = palette[3]
                 targetArrowLeft.fillColor = palette[3]
-                correct = -1
+                correct = 0
         if more_task_info[1]['Trial by trial feedback']:
             feedback.setAutoDraw(True)
         win.flip()
@@ -755,7 +758,7 @@ for i, block in enumerate(thisExp.loops):
         # Write data to .txt file
         #---------------------------------------------------
         with open(Output + '.txt', 'a') as b:
-            b.write(f'{block.thisRepN} {trial_label} {block.thisTrialN} {Signal} {lifted} {this_stoptime} {kd_start_synced}\n')
+            b.write(f'{block.thisRepN} {trial_label} {block.thisTrialN} {Signal} {lifted} {correct} {this_stoptime} {kd_start_synced}\n')
         #---------------------------------------------------
         # Write data to .csv file
         #---------------------------------------------------
@@ -766,6 +769,7 @@ for i, block in enumerate(thisExp.loops):
             'trial',
             'signal',
             'response',
+            'correct',
             'ssd',
             'rt'
             ]
@@ -776,6 +780,7 @@ for i, block in enumerate(thisExp.loops):
             block.thisTrialN,
             Signal,
             lifted,
+            correctThisTrial,
             this_stoptime,
             kd_start_synced
             ]
