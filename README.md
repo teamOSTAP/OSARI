@@ -65,6 +65,8 @@ In the `.xlsx` files, each row is a trial. The *Signal* column determines the tr
 Four output files are generated with the format `ID_OSARI_yyyy_mm_d_hhmm` where ID = participant ID, yyyy = year, mo = month in string format, d = day in numeric format, h = hour and m = minute. The primary data output file used by our analysis script are the `.txt` files stored in the `dataTxt/` subfolder. All other files are stored in `data/` `.csv` files include all additional data [Log files](https://www.psychopy.org/general/dataOutputs.html) provide a timestamped log of events that can be used for checking stimulus and event timings.
     
 ### Basic information 
+
+**id**: Participant identification number or string
     
 **block**: Block number
 
