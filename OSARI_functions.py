@@ -87,12 +87,10 @@ def calculateStopTime(correct, stoptime, lower_ssd, upper_ssd, stepsize):
     """
     if  correct == 2 and stoptime < upper_ssd:
         stoptime = stoptime + stepsize
-        print("stop time increased")
     elif correct == 2 and stoptime == upper_ssd:
         stoptime = upper_ssd
     elif correct == 0 and stoptime > lower_ssd: 
         stoptime = stoptime - stepsize
-        print("stop time decreased")
     elif correct == 0 and stoptime == lower_ssd:
         stoptime = lower_ssd
     return stoptime
