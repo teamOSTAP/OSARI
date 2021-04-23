@@ -237,7 +237,7 @@ for outDir in outDirs:
 # Write header for txt file (i.e., column names)
 Output = outFiles[0]
 with open(Output + '.txt', 'a') as b:
-    b.write('block  trialType   trial   signal  response    correct ssd rt\n')
+    b.write('id  block  trialType   trial   signal  response    correct ssd rt\n')
 
 #======================================
 # Experiment Handler
@@ -758,7 +758,7 @@ for i, block in enumerate(thisExp.loops):
         # Write data to .txt file
         #---------------------------------------------------
         with open(Output + '.txt', 'a') as b:
-            b.write(f'{block.thisRepN} {trial_label} {block.thisTrialN} {Signal} {lifted} {correct} {this_stoptime} {kd_start_synced}\n')
+            b.write(f'{expInfo["Participant ID"]} {block.thisRepN} {trial_label} {block.thisTrialN} {Signal} {lifted} {correct} {this_stoptime} {kd_start_synced}\n')
         #---------------------------------------------------
         # Write data to .csv file
         #---------------------------------------------------
