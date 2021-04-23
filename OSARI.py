@@ -114,7 +114,7 @@ except:
     more_task_info = [{'Practice Trials': True,
                         'Test Go Block': True,
                         'Method': ['staircase', 'fixed'],
-                        'Trial order': ['random', 'sequential']},
+                        'Trial Order': ['random', 'sequential']},
                       {'Count Down': False,
                         'Trial-by-trial Feedback': True,
                         'Step size (s)': 0.025,
@@ -138,13 +138,13 @@ if not expInfo['Default Parameters?']:
                               'Test Go Block': 'Do you want to present a full block of go trials in advance of the '
                                               'mixed go/stop blocks?',
                               'Method': 'What SSD method do you want?',
-                              'Trial order': 'Do you want trials to be in a random order or in the order you have set '
+                              'Trial Order': 'Do you want trials to be in a random order or in the order you have set '
                                              'in the conditions .xlsx file [sequential]'
                                              })
     if not dlg.OK: core.quit()
 else:
     # parameters with multiple options need their default selecting
-    more_task_info[0]['Trial order'] = 'random'
+    more_task_info[0]['Trial Order'] = 'random'
     more_task_info[0]['Method'] = 'staircase'
 
 #---------------------------------------------------
@@ -329,7 +329,7 @@ for cond in condFileList:
     thisTrials = data.TrialHandler(
                     trialList=thisConditions,
                         nReps=cond[1],
-                    method=more_task_info[0]['Trial order'],
+                    method=more_task_info[0]['Trial Order'],
                     name=path.splitext(thisfilename)[0],
                         autoLog=True
                     )  # name of loop is .xlsx filename
@@ -618,7 +618,9 @@ for i, block in enumerate(thisExp.loops):
         # Set or reset the SSD (only relevant if it is a stop trial)
         if not more_task_info[0]['Method'] == 'fixed':
             stoptime = calculateStopTime(
-                            correct, stoptime,
+                            thisTrial['Signal'],
+                            correct, 
+                            stoptime,
                             more_task_info[1]['Lowest SSD (s)'],
                             more_task_info[1]['Highest SSD (s)'],
                             more_task_info[1]['Step size (s)']
