@@ -72,37 +72,28 @@ def countdown():
             number_text.draw()
         win.flip()
 
-def calculateStopTime(Signal, correct, stoptime, lower_ssd, upper_ssd, stepsize):
+def calculateStopTime(correct, stoptime, lower_ssd, upper_ssd, stepsize):
     """
     Calculate stoptime for next trial based on:
         correct (int):
-            0 = incorrect (applies to both go and stop trials)
-            2 = correct  (applies to both go and stop trials)
+            0 = incorrect stop OR
+            2 = correct stop
         stoptime (float):
             stoptime on previous trial
         lower_ssd (float):
             lowest possible ssd selected by the user in the Additional Parameters Dialog 
         upper_ssd (float)
             highest possible ssd selected by the user in the Additional Parameters Dialog 
-        IF stop trial (based on whether Signal == 1) AND: 
-            IF the participant was (correct == 2) AND the SSD is greater than the lowest SSD (lower_ssd):
-                Increase the SSD (making it more difficult to stop)
-            ELSE IF the participant was incorrect (correct == 0) AND the SSD is  lower than the highest SSD (upper_ssd):
-                Decrease the ssd (making it easier to stop)
-    The additional  "==" conditionals  are used to control the lower and upper ssd limits.
-    IF they were correct and the SSD is already at its highest possible value (upper_ssd),
-    then just repeat that ssd (stoptime == upper_ssd)
-    Similarly, if they were incorrect and the SSD is already at its lowest possible value (lower_ssd), 
-    repeat that ssd (stoptime == lower_ssd).
     """
-    print(type(upper_ssd))
-    if Signal == 1 and correct == 2 and round(stoptime, 3) < round(upper_ssd,3):
+    if  correct == 2 and stoptime < upper_ssd:
         stoptime = stoptime + stepsize
-    elif Signal == 1 and correct == 2 and round(stoptime, 3) == round(upper_ssd,3):
+        print("stop time increased")
+    elif correct == 2 and stoptime == upper_ssd:
         stoptime = upper_ssd
-    elif Signal == 1 and correct == 0 and round(stoptime, 3) > round(lower_ssd,3): 
+    elif correct == 0 and stoptime > lower_ssd: 
         stoptime = stoptime - stepsize
-    elif Signal == 1 and correct == 0 and round(stoptime, 3) == round(lower_ssd, 3):
+        print("stop time decreased")
+    elif correct == 0 and stoptime == lower_ssd:
         stoptime = lower_ssd
     return stoptime
 

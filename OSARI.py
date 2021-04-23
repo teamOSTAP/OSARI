@@ -618,9 +618,8 @@ for i, block in enumerate(thisExp.loops):
         # Set or reset the SSD (only relevant if it is a stop trial)
         if not more_task_info[0]['Method'] == 'fixed':
             stoptime = calculateStopTime(
-                            thisTrial['Signal'],
                             correct, 
-                            stoptime,
+                            stoptime, 
                             more_task_info[1]['Lowest SSD (s)'],
                             more_task_info[1]['Highest SSD (s)'],
                             more_task_info[1]['Step size (s)']
@@ -717,16 +716,16 @@ for i, block in enumerate(thisExp.loops):
             lifted = 0
             RT = 'NaN'
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
-            # Conditional feedback on go trials
+            # Omission Error
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
             if Signal == 0:
-                feedback = instructionsText['incorrectStop']
+                feedback = instructionsText['Omission']
                 # Change the colour of the target arrows based on feedback
                 targetArrowRight.fillColor = palette[3]
                 targetArrowLeft.fillColor = palette[3]
-                correct = 0 #omission error
+                correct = -1 
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
-            # Conditional feedback on stop trials
+            # Correct Stop
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
             elif Signal == 1:
                 correct = 2
@@ -741,9 +740,9 @@ for i, block in enumerate(thisExp.loops):
             RT = lift_time
             if Signal == 0:
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
-                # Correct Go Feedback
+                # Correct Go 
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
-                correct = 2
+                correct = 1
                 targetArrowRight.fillColor = setTargetCol(kd_start_synced, Target_time, palette)
                 targetArrowLeft.fillColor = setTargetCol(kd_start_synced, Target_time, palette)
                 if RT > .100:
@@ -752,7 +751,7 @@ for i, block in enumerate(thisExp.loops):
                     feedback = instructionsText['almostGo']
             elif Signal == 1:
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
-                # Incorrect Go (i.e., prematue lift)
+                # Correct Stop
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
                 feedback = instructionsText['incorrectGo']
                 targetArrowRight.fillColor = palette[3]
