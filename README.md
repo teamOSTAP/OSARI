@@ -79,6 +79,11 @@ Four output files are generated with the format `ID_OSARI_yyyy_mm_d_hhmm` where 
 
 **response**: What the participants response was ( 0 = no lift, 1 = lift)
 
+**correct**: 0 = incorrect stop
+             -1 = incorrect go (omission error)
+             1 = correct go
+             2 = correct stop
+
 **rt**: Lift time of participants relative to the starting line
 
 **ssd**: Stop Signal Distance (relative to starting line) if the trial was a stop trial (NaN for go trials).
