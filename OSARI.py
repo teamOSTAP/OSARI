@@ -80,23 +80,31 @@ expName = 'OSARI'
 #---------------------------------------------------
 # The participant information GUI (expInfo)
 #---------------------------------------------------
-expInfo = {
-            'Participant ID': '0000',
-           'Age (Years)': '00',
-           'Gender': ['Female', 'Male', 'Transgender', 'Non-binary', 'Other', 'Prefer not to say'],
-           'Gender (other)': 'please state if other selected',
-           'Default parameters?': True
-           }
+# load experiment fields from excel sheet
+
+demographic_file = data.importConditions('demographics.xlsx')
+demographic_dict = {}
+tips = {}
+for field in demographic_file:
+    print('here3')
+    if type(field['Default']) == str:
+        if ',' in field['Default']:
+            print('here')
+            demographic_dict[field['Field']] = field['Default'].split(',')
+    else:
+        print('here2')
+        demographic_dict[field['Field']] = field['Default']
+    tips[field['Field']] = field['Tip']
+
+
+expInfo = demographic_dict
+expInfo['Default parameters?'] = True
+tips['Default parameters?'] = 'This will run the task with no additional options'
 
 # Dictionary for the participant information GUI (expInfo)
 dlg = gui.DlgFromDict(dictionary=expInfo, title='Participant Information',
-                      tip={
-                            'Participant ID': 'Participant identifier',
-                            'Age (Years)': 'Your age in years',
-                            'Gender': 'The gender you identify as',
-                            'Gender (other)': 'The gender you identify as if none of the dropdown options above are applicable',
-                            'Default parameters?': 'This will run the task with no additional options'
-                            })
+                      tip=tips,
+                      order = expInfo.keys())
 
 if not dlg.OK: core.quit()
 expInfo['date'] = data.getDateStr()
