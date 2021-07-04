@@ -1,3 +1,5 @@
+
+#These are internal functions used by the main OSARI.py code
 from psychopy import event, core
 from psychopy.visual.shape import ShapeStim
 
@@ -64,8 +66,6 @@ def countdown():
                     countdownTime.reset()  # reset the countdown clock
         Bar.draw()
         fillBar.draw()
-        if more_task_info[1]['Spaceship']:
-            Spaceship.draw()
         targetArrowRight.draw()
         targetArrowLeft.draw()
         if countdownTime.getTime() > 0:
@@ -76,25 +76,23 @@ def calculateStopTime(correct, stoptime, lower_ssd, upper_ssd, stepsize):
     """
     Calculate stoptime for next trial based on:
         correct (int):
-            -2 held for the full duration of a go trial
-            -1 incorrectly lifted on a Stop trial
-            1 correctly lifted on a go trial
-            2 correctly stopped on a Stop trial
+            0 = incorrect stop OR
+            2 = correct stop
         stoptime (float):
             stoptime on previous trial
-        lower_ssd (???):
-            ???
-        upper_ssd (???):
-            ???
+        lower_ssd (float):
+            lowest possible ssd selected by the user in the Additional Parameters Dialog 
+        upper_ssd (float)
+            highest possible ssd selected by the user in the Additional Parameters Dialog 
     """
-    if correct == -1 and round(stoptime, 3) > round(lower_ssd,3):
-        stoptime = stoptime - stepsize
-    elif correct == -1 and round(stoptime, 3) == round(lower_ssd, 3):
-        stoptime = lower_ssd
-    elif correct == 2 and round(stoptime, 3) < round(upper_ssd,3):
+    if  correct == 2 and stoptime < upper_ssd:
         stoptime = stoptime + stepsize
-    elif correct == 2 and round(stoptime, 3) == round(upper_ssd,3):  # never equal floats in python. so we use round.
+    elif correct == 2 and stoptime == upper_ssd:
         stoptime = upper_ssd
+    elif correct == 0 and stoptime > lower_ssd: 
+        stoptime = stoptime - stepsize
+    elif correct == 0 and stoptime == lower_ssd:
+        stoptime = lower_ssd
     return stoptime
 
 def setHeight(time_elapsed, this_stoptime, bar_height, trial_length):

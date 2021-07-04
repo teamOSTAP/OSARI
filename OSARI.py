@@ -8,33 +8,31 @@ Authors: Rebecca J Hirst [1] Rohan Puri [2] Jason L He [3]
 Mail to Authors:  opensourceTAP@gmail.com
 
 Input:
-    4 csv files:
-        practiceGoTrials.csv
-        testGoBlocks.csv
-        practiceMixedTrials.csv
-        testBlocks.csv
+    5 xlsx files:
+        practiceGoTrials.xlsx
+        testGoBlocks.xlsx
+        practiceMixedTrials.xlsx
+        testBlocks.xlsx
+        instructions.xlsx
 
-    In all csv files each row corresponds to a trial, so the number of rows will correspond to the number
-    of trials in a block. Note, that the order of trial presentation will be random unless the user specifies otherwise.
-    0 = Go 1 = Stop
+    See header comments for details on each parameter.
 
 Output:
 
     4 output files in format:
-        data/s_ID_OSARI_yyyy_mo_d_hhmm.log
-        data/s_ID_OSARI_yyyy_mo_d_hhmm.csv
-        data/s_ID_OSARI_yyyy_mo_d_hhmm.psydat
-        data_txt/s_ID_OSARI_yyyy_mo_d_hhmm.txt
+        data/ID_OSARI_yyyy_mo_d_hhmm.log
+        data/ID_OSARI_yyyy_mo_d_hhmm.csv
+        data/ID_OSARI_yyyy_mo_d_hhmm.psydat
+        data_txt/ID_OSARI_yyyy_mo_d_hhmm.txt
 
     ID = Participant ID ; yyyy = Year; mo = month
     d = day; h = hour; m = minute
     Data stored in "data_txt" is compatible with BASTD analysis script (https://github.com/HeJasonL/BASTD)
-    Block: block number
-    blockRep: current repetition of this block type
+    Block: current repetition of this block type
     TrialType: block label (practice/real all go/mixed)
     Trial: trial number
     Signal: 0 = Go
-            1 = Stop
+                1 = Stop
     Response: 0 = no lift, 1 = lift
     SSD: Stop Signal Distance (relative to start time) if the trial was a stop trial.
     RT: key lift time of participants relative to start time
@@ -70,41 +68,35 @@ os.chdir(_thisDir)
 expName = 'OSARI'
 
 #======================================
-# Setup the Graphic User Interfaces (GUIs)
+# Setup the Dialog Boxes
 #======================================
-    #OSARI presents users with three GUIs:
-        # 1. The Participant Information GUI
-        # 2. The Trial Structure GUI
-        # 3. The Additional Parameters GUI
+    #OSARI presents users with three Dialog Box:
+        # 1. The Participant Information Dialog Box
+        # 2. The Trial Structure Dialog Box
+        # 3. The Additional Parameters Dialog Box
 
 #---------------------------------------------------
 # The participant information GUI (expInfo)
 #---------------------------------------------------
-# load experiment fields from excel sheet
-
-demographic_file = data.importConditions('demographics.xlsx')
-demographic_dict = {}
-tips = {}
-for field in demographic_file:
-    print('here3')
-    if type(field['Default']) == str:
-        if ',' in field['Default']:
-            print('here')
-            demographic_dict[field['Field']] = field['Default'].split(',')
-    else:
-        print('here2')
-        demographic_dict[field['Field']] = field['Default']
-    tips[field['Field']] = field['Tip']
-
-
-expInfo = demographic_dict
-expInfo['Default parameters?'] = True
-tips['Default parameters?'] = 'This will run the task with no additional options'
+expInfo = {
+            'Participant ID': '0000',
+           'Age (Years)': '00',
+           'Gender': ['Female', 'Male', 'Transgender', 'Non-binary', 'Other', 'Prefer not to say'],
+           'Gender (other)': 'Please state if other selected',
+           'Default Parameters?': True
+           }
 
 # Dictionary for the participant information GUI (expInfo)
-dlg = gui.DlgFromDict(dictionary=expInfo, title='Participant Information',
-                      tip=tips,
-                      order = expInfo.keys())
+dlg = gui.DlgFromDict(
+dictionary=expInfo, 
+sortKeys = False, title= 'Participant Information',
+                      tip={
+                            'Participant ID': 'Participant identifier',
+                            'Age (Years)': 'Your age in years',
+                            'Gender': 'The gender you identify as',
+                            'Gender (other)': 'The gender you identify as if none of the dropdown options above are applicable',
+                            'Default Parameters?': 'This will run the task with no additional options'
+                            })
 
 if not dlg.OK: core.quit()
 expInfo['date'] = data.getDateStr()
@@ -119,62 +111,68 @@ try:  # try to find pickle files if they exist
     more_task_info2 = pickle.load(more_task_info2)
     more_task_info = [more_task_info1, more_task_info2]
 except:
-    more_task_info = [{'Practice trials': True,
-                        'All Go block': True,
+    more_task_info = [{'Practice Trials': True,
+                        'Test Go Block': True,
                         'Method': ['staircase', 'fixed'],
-                        'Trial order': ['random', 'sequential']},
-                      {'Count down': False,
-                        'Trial by trial feedback': True,
-                        'Step size (s)': 0.025,     
+                        'Trial Order': ['random', 'sequential']},
+                      {'Count Down': False,
+                        'Trial-by-trial Feedback': True,
+                        'Step size (s)': 0.025,
                         'Lowest SSD (s)': 0.05,
                         'Highest SSD (s)': 0.775,
-                        'Total bar height (in cm)': 15,
-                        'Number of Test Blocks': 3,
+                        'Total Bar Height (in cm)': 15,
+                        'Number of Test Mixed Blocks': 3,
                         'Full Screen': True,
-                        'color blind palette?': False,
-                        'Response key': ['space', 'left', 'right', 'up', 'down'],
-                       'Remember params': False
+                        'Color Blind Palette?': False,
+                        'Response Key': ['space', 'left', 'right', 'up', 'down'],
+                       'Remember Parameters': False
                        }]
 
-# If no to default params, present further task params options.
-if not expInfo['Default parameters?']:
-    dlg = gui.DlgFromDict(dictionary=more_task_info[0], title='Trial Structure',
+# If user selected 'no' to Default Parameters, present Additional Parameter options.
+if not expInfo['Default Parameters?']:
+    dlg = gui.DlgFromDict(
+    dictionary=more_task_info[0], 
+    sortKeys = False,
+    title='Trial Structure',
                           tip={
-                              'All Go block': 'Do you want to present a full block of go trials in advance of the '
+                              'Test Go Block': 'Do you want to present a full block of go trials in advance of the '
                                               'mixed go/stop blocks?',
                               'Method': 'What SSD method do you want?',
-                              'Trial order': 'Do you want trials to be in a random order or in the order you have set '
-                                             'in the conditions .csv file [sequential]'
+                              'Trial Order': 'Do you want trials to be in a random order or in the order you have set '
+                                             'in the conditions .xlsx file [sequential]'
                                              })
     if not dlg.OK: core.quit()
 else:
     # parameters with multiple options need their default selecting
-    more_task_info[0]['Trial order'] = 'random'
+    more_task_info[0]['Trial Order'] = 'random'
     more_task_info[0]['Method'] = 'staircase'
 
 #---------------------------------------------------
 # The Additional Parameters GUI (more_task_info[1])
 #---------------------------------------------------
-if not expInfo['Default parameters?']:
-    dlg = gui.DlgFromDict(dictionary=more_task_info[1], title='Additional parameters',
+if not expInfo['Default Parameters?']:
+    dlg = gui.DlgFromDict(
+    dictionary=more_task_info[1], 
+    sortKeys = False,
+    title='Additional parameters',
                           tip={
-                              'Count down': 'Do you want a countdown before the bar starts filling?',    
-                              'Trial by trial feedback': 'Do you want participants to receive trial to trial feedback',
+                              'Count Down': 'Do you want a countdown before the bar starts filling?',
+                              'Trial-by-trial Feedback': 'Do you want participants to receive trial to trial feedback',
                               'Step size (s)': 'What do you want the step size to be in ms - e.g., 0.025 is 25ms',
                               'Lowest SSD (s)': 'The lowest the SSD can go in ms - e.g., 0.05 is 50ms',
                               'Highest SSD (s)': 'The highest the SSD can go in ms - e.g., 0.775 is 775ms',
-                              'Total bar height (in cm)': 'The total height of the bar',
-                              'Number of Test Blocks': 'Number of test blocks [i.e. number of times trials in .csv '
+                              'Total Bar Height (in cm)': 'The total height of the bar',
+                              'Number of Test Mixed Blocks': 'Number of test mixed blocks [i.e. number of times trials in .xlsx '
                                                        'file will be repeated. To set trial number and proportion of '
-                                                       'stop vs. go edit the .csv file]',
+                                                       'stop vs. go edit the .xlsx file]',
                               'Full Screen': 'Do you want to run the task with Full Screen - recommended'
                               })
     if not dlg.OK: core.quit()
 else:
-    # params with multiple options need their default selecting
-    more_task_info[1]['Response key'] = 'space'
+    # Parameters with multiple options need their default selecting
+    more_task_info[1]['Response Key'] = 'space'
 
-if more_task_info[1]['Remember params']: #if participant selects 'remember parameters'
+if more_task_info[1]['Remember Parameters']: #if participant selects 'remember parameters'
     # print and save that information into the working directory
     print('storing parameters for later')
     toFile("more_task_info1.pickle", more_task_info[0])
@@ -188,10 +186,10 @@ if more_task_info[1]['Remember params']: #if participant selects 'remember param
 # Do not change these parameters without fully considering their implications
 
 # Bar_top: how many cm above the centre of the screen (x = 0 y = 0) the top of the bar will be drawn.
-Bar_top = more_task_info[1]['Total bar height (in cm)'] / 2
+Bar_top = more_task_info[1]['Total Bar Height (in cm)'] / 2
 
 # Target_pos: position of target line relative to total bar height (default is 80% of bar height)
-Target_pos = (.8 * more_task_info[1]['Total bar height (in cm)']) - Bar_top
+Target_pos = (.8 * more_task_info[1]['Total Bar Height (in cm)']) - Bar_top
 
 taskInfo = {
             'Bar base below fixation (cm)': Bar_top,
@@ -206,7 +204,7 @@ taskInfo = {
 
 # trial_length: max duration of a trial in seconds (time for bar to fill completely)
 trial_length = taskInfo['trial length (max trial duration in seconds)']
-bar_height = more_task_info[1]['Total bar height (in cm)']
+bar_height = more_task_info[1]['Total Bar Height (in cm)']
 
 # Target_time: time taken to reach target line (default: 80% of the total trial time)
 Target_time = (.8 * taskInfo['trial length (max trial duration in seconds)'])
@@ -241,12 +239,12 @@ for outDir in outDirs:
     if not os.path.exists(_thisDir + os.sep + outDir + os.sep):
         print(f'{outDir}folder did not exist, making one in current directory')
         os.makedirs(f'{_thisDir}{os.sep}{outDir}{os.sep}')
-    outFiles.append(f'{_thisDir}{os.sep}{outDir}{os.sep}s_{expInfo["Participant ID"]}_{expName}_{expInfo["date"]}')
+    outFiles.append(f'{_thisDir}{os.sep}{outDir}{os.sep}{expInfo["Participant ID"]}_{expName}_{expInfo["date"]}')
 
 # Write header for txt file (i.e., column names)
 Output = outFiles[0]
 with open(Output + '.txt', 'a') as b:
-    b.write('block	trialType	trial	signal	response	ssd	rt\n')
+    b.write('id	block	trialType	trial	signal	response	correct	ssd	rt\n')
 
 #======================================
 # Experiment Handler
@@ -281,7 +279,7 @@ logging.console.setLevel(logging.WARNING)
 
 condFileList = [] # Create a list to store the block conditions
 
-# The condition files are excel or .csv files that contain two columns and X number of rows
+# The condition files are excel or .xlsx files that contain two columns and X number of rows
     # with 'X' being the number of rows the user wants the participant's to complete
     # The columns are 'Signal' and 'fixedStopTime'
 
@@ -292,33 +290,33 @@ condFileList = [] # Create a list to store the block conditions
 #---------------------------------------------------
 # Practice Go Block
 #---------------------------------------------------
-if more_task_info[0]['Practice trials']: # if practice was selected
+if more_task_info[0]['Practice Trials']: # if practice was selected
     condFileList.append(
-                    ['conditionFiles/practiceGoTrials.csv', 1]
+                    ['conditionFiles/practiceGoTrials.xlsx', 1]
                     )
 
 #---------------------------------------------------
 # Test Go Block
 #---------------------------------------------------
-if more_task_info[0]['All Go block']: # if test go block was selected
+if more_task_info[0]['Test Go Block']: # if test go block was selected
     condFileList.append(
-                    ['conditionFiles/testGoBlocks.csv', 1]
+                    ['conditionFiles/testGoBlocks.xlsx', 1]
                     )
 
 #---------------------------------------------------
 # Practice Mixed Block
 #---------------------------------------------------
-if more_task_info[0]['Practice trials']:  # if practice was selected
+if more_task_info[0]['Practice Trials']:  # if practice was selected
     condFileList.append(
-                    ['conditionFiles/practiceMixedTrials.csv', 1]
+                    ['conditionFiles/practiceMixedTrials.xlsx', 1]
                     )
 
 #---------------------------------------------------
 # Test Mixed Block
 #---------------------------------------------------
 condFileList.append(
-                ['conditionFiles/testBlocks.csv',
-                more_task_info[1]['Number of Test Blocks']
+                ['conditionFiles/testBlocks.xlsx',
+                more_task_info[1]['Number of Test Mixed Blocks']
                 ]
                 )
 
@@ -326,15 +324,15 @@ condFileList.append(
 # Create trial handler object based on selected blocks
 #---------------------------------------------------
 for cond in condFileList:
-    thisConditions = data.importConditions(cond[0])  # import the .csv file
+    thisConditions = data.importConditions(cond[0])  # import the .xlsx file
     thisfilename = path.split(cond[0])[1]
     thisTrials = data.TrialHandler(
                     trialList=thisConditions,
                         nReps=cond[1],
-                    method=more_task_info[0]['Trial order'],
+                    method=more_task_info[0]['Trial Order'],
                     name=path.splitext(thisfilename)[0],
                         autoLog=True
-                    )  # name of loop is .csv filename
+                    )  # name of loop is .xlsx filename
     thisExp.addLoop(thisTrials)
 
 #======================================
@@ -353,7 +351,7 @@ instructionsText={}
 for thisInstruction in instructions:
     if thisInstruction['respKey']:
         thisTxt = thisInstruction['instruction'].format(
-                        variable = more_task_info[1]['Response key']
+                        variable = more_task_info[1]['Response Key']
                         )
     else:
         thisTxt = thisInstruction['instruction']
@@ -449,7 +447,7 @@ Bar = visual.ShapeStim(
 # Triangles were used so that a line was not superimposed onto the background bar
 
 # The target width
-target_width = 0.5 
+target_width = 0.5
 
 # Right Target Arrow
 targetArrowRightvert = [(1.5, Target_pos),
@@ -485,7 +483,7 @@ targetArrowLeft = visual.ShapeStim(
 #======================================
 # Set the stimulus colors
 #======================================
-if more_task_info[1]['color blind palette?']:
+if more_task_info[1]['Color Blind Palette?']:
     palette = ['#009E73', '#F0E442', '#E69F00', '#D55E00']
 else:
     palette = ['Green', 'Yellow', 'Orange', 'Red']
@@ -523,6 +521,7 @@ keyWatch(thisExp=thisExp)
 # Trial loop
 height = 0
 correct = []
+correctThisTrial = []
 ITI = 2 # the inter-trial interval or wait period
 
 #======================================
@@ -569,7 +568,7 @@ for i, block in enumerate(thisExp.loops):
         # if this is a test block of go and stop trials
         if block.name == 'testBlocks':
             # If practice trials were not selected
-            if block.thisRepN == 0 and block.thisTrialN == 0 and more_task_info[0]['Practice trials']==False:
+            if block.thisRepN == 0 and block.thisTrialN == 0 and more_task_info[0]['Practice Trials']==False:
                 # give the stop instruction image
                 stop_instr_image.draw()
                 win.flip()
@@ -586,6 +585,8 @@ for i, block in enumerate(thisExp.loops):
                 instructionsText['testMixedWarning'].draw()
                 win.flip()
                 keyWatch(thisExp=thisExp)
+                #Store whether the response was correct = 2 or incorrect (correct = 0)
+                correctThisTrial = correct
                 # Set the stopTime to the starting stop-signal delay (SSD) requested
                 stoptime = taskInfo['StopS start pos. (seconds)']
                 correct = []  # Reset correct
@@ -617,7 +618,8 @@ for i, block in enumerate(thisExp.loops):
         # Set or reset the SSD (only relevant if it is a stop trial)
         if not more_task_info[0]['Method'] == 'fixed':
             stoptime = calculateStopTime(
-                            correct, stoptime,
+                            correct, 
+                            stoptime, 
                             more_task_info[1]['Lowest SSD (s)'],
                             more_task_info[1]['Highest SSD (s)'],
                             more_task_info[1]['Step size (s)']
@@ -626,7 +628,7 @@ for i, block in enumerate(thisExp.loops):
             stoptime = int(thisTrial['fixedStopTime'])
         # Reset correct
         correct = []
-        # Set the SSD  
+        # Set the SSD
         Signal = thisTrial['Signal']
         if Signal == 1:
             # If stop trial, this_stoptime (SSD) = stoptime
@@ -642,11 +644,11 @@ for i, block in enumerate(thisExp.loops):
         win.flip()
         kb.start()  # Watch for the response key to be depressed
         kb.clearEvents()
-        k = keyWatch(thisExp = thisExp, keyList=[more_task_info[1]['Response key']])
+        k = keyWatch(thisExp = thisExp, keyList=[more_task_info[1]['Response Key']])
         # Reset the vertices to their begining position
         fillBar.vertices = original_vert  # vert
         # Count down before trial starts
-        if more_task_info[1]['Count down']:
+        if more_task_info[1]['Count Down']:
             countdown()
         stimList = [targetArrowLeft, targetArrowRight, Bar, fillBar]
         for stim in stimList:
@@ -670,7 +672,7 @@ for i, block in enumerate(thisExp.loops):
         while time_elapsed < trial_length and waiting == 1:
             # Watch the keyboard for a response
             remainingKeys = kb.getKeys(
-                            keyList=[more_task_info[1]['Response key'],
+                            keyList=[more_task_info[1]['Response Key'],
                             'escape'],
                             waitRelease=False,
                             clear=False
@@ -714,16 +716,16 @@ for i, block in enumerate(thisExp.loops):
             lifted = 0
             RT = 'NaN'
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
-            # Conditional feedback on go trials
+            # Omission Error
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
             if Signal == 0:
-                feedback = instructionsText['incorrectStop']
+                feedback = instructionsText['Omission']
                 # Change the colour of the target arrows based on feedback
                 targetArrowRight.fillColor = palette[3]
                 targetArrowLeft.fillColor = palette[3]
-                correct = -2
+                correct = -1 
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
-            # Conditional feedback on stop trials
+            # Correct Stop
             #'''''''''''''''''''''''''''''''''''''''''''''''''''
             elif Signal == 1:
                 correct = 2
@@ -733,12 +735,12 @@ for i, block in enumerate(thisExp.loops):
                 feedback = instructionsText['correctStop']
         # If the key was lifted before the bar filled
         else:
-            # If this was a stop trial give feedback that the participant incorrectly stopped 
+            # If this was a stop trial give feedback that the participant incorrectly stopped
             lifted = 1
             RT = lift_time
             if Signal == 0:
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
-                # Correct Go Feedback
+                # Correct Go 
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
                 correct = 1
                 targetArrowRight.fillColor = setTargetCol(kd_start_synced, Target_time, palette)
@@ -749,13 +751,13 @@ for i, block in enumerate(thisExp.loops):
                     feedback = instructionsText['almostGo']
             elif Signal == 1:
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
-                # Incorrect Go (i.e., prematue lift) 
+                # Correct Stop
                 #'''''''''''''''''''''''''''''''''''''''''''''''''''
                 feedback = instructionsText['incorrectGo']
                 targetArrowRight.fillColor = palette[3]
                 targetArrowLeft.fillColor = palette[3]
-                correct = -1
-        if more_task_info[1]['Trial by trial feedback']:
+                correct = 0
+        if more_task_info[1]['Trial-by-trial Feedback']:
             feedback.setAutoDraw(True)
         win.flip()
         if Signal == 0:
@@ -764,7 +766,7 @@ for i, block in enumerate(thisExp.loops):
         # Write data to .txt file
         #---------------------------------------------------
         with open(Output + '.txt', 'a') as b:
-            b.write(f'{block.thisRepN} {trial_label} {block.thisTrialN} {Signal} {lifted} {this_stoptime} {kd_start_synced}\n')
+            b.write(f'{expInfo["Participant ID"]}	{block.thisRepN}	{trial_label}	{block.thisTrialN}	{Signal}	{lifted}	{correct}	{this_stoptime}	{kd_start_synced}\n')
         #---------------------------------------------------
         # Write data to .csv file
         #---------------------------------------------------
@@ -775,6 +777,7 @@ for i, block in enumerate(thisExp.loops):
             'trial',
             'signal',
             'response',
+            'correct',
             'ssd',
             'rt'
             ]
@@ -785,6 +788,7 @@ for i, block in enumerate(thisExp.loops):
             block.thisTrialN,
             Signal,
             lifted,
+            correctThisTrial,
             this_stoptime,
             kd_start_synced
             ]
