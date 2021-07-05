@@ -93,7 +93,7 @@ for field in demographic_file:
         expInfo[field['Name']] = field['Default']
     tips[field['Name']] = field['Tip']
 
-expInfo['Default parameters?'] = True
+expInfo['Default Parameters?'] = True
 tips['Default parameters?'] = 'This will run the task with no additional options'
 
 # Dictionary for the participant information GUI (expInfo)
