@@ -78,25 +78,30 @@ expName = 'OSARI'
 #---------------------------------------------------
 # The participant information GUI (expInfo)
 #---------------------------------------------------
-expInfo = {
-            'Participant ID': '0000',
-           'Age (Years)': '00',
-           'Gender': ['Female', 'Male', 'Transgender', 'Non-binary', 'Other', 'Prefer not to say'],
-           'Gender (other)': 'Please state if other selected',
-           'Default Parameters?': True
-           }
+demographic_file = data.importConditions('demographics.xlsx')
+expInfo = {}
+expInfo['Participant ID'] = '0000'
+
+tips = {}
+
+for field in demographic_file:
+    if type(field['Default']) == str:
+        if ',' in field['Default']:
+            # check if the value provided is a list and if so convert string to list
+            expInfo[field['Name']] = field['Default'].split(',')
+    else:
+        expInfo[field['Name']] = field['Default']
+    tips[field['Name']] = field['Tip']
+
+expInfo['Default Parameters?'] = True
+tips['Default parameters?'] = 'This will run the task with no additional options'
 
 # Dictionary for the participant information GUI (expInfo)
 dlg = gui.DlgFromDict(
-dictionary=expInfo, 
-sortKeys = False, title= 'Participant Information',
-                      tip={
-                            'Participant ID': 'Participant identifier',
-                            'Age (Years)': 'Your age in years',
-                            'Gender': 'The gender you identify as',
-                            'Gender (other)': 'The gender you identify as if none of the dropdown options above are applicable',
-                            'Default Parameters?': 'This will run the task with no additional options'
-                            })
+    dictionary=expInfo,
+    sortKeys = False, title= 'Participant Information',
+    tip=tips,
+    order= expInfo.keys())
 
 if not dlg.OK: core.quit()
 expInfo['date'] = data.getDateStr()
